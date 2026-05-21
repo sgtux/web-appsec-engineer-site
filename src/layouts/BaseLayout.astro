@@ -1,0 +1,87 @@
+---
+export interface Props {
+  title: string;
+  description?: string;
+  isPost?: boolean;
+}
+
+const {
+  title,
+  description = 'Pesquisa aplicada em segurança de aplicações web — vulnerabilidades, laboratórios, CTFs, criptografia e desenvolvimento seguro.',
+  isPost = false,
+} = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? 'https://web-appsec.engineer');
+const siteTitle = title === 'Web AppSec Engineer'
+  ? 'Web AppSec Engineer'
+  : `${title} · Web AppSec Engineer`;
+
+const currentPath = Astro.url.pathname;
+---
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="generator" content={Astro.generator} />
+
+  <title>{siteTitle}</title>
+  <meta name="description" content={description} />
+  <link rel="canonical" href={canonicalURL} />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content={isPost ? 'article' : 'website'} />
+  <meta property="og:title" content={siteTitle} />
+  <meta property="og:description" content={description} />
+  <meta property="og:url" content={canonicalURL} />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content={siteTitle} />
+  <meta name="twitter:description" content={description} />
+
+  <!-- Favicon inline SVG -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>𓂀</text></svg>" />
+
+  <link rel="stylesheet" href="/styles/global.css" />
+</head>
+<body>
+  <div class="site-wrapper">
+
+    <!-- ── HEADER ── -->
+    <header class="site-header">
+      <div class="container">
+        <div class="header-inner">
+          <a href="/" class="site-logo">
+            <span class="logo-main">Web AppSec Engineer</span>
+            <span class="logo-sub">𓂀 Security Research &amp; Engineering</span>
+          </a>
+          <nav class="site-nav" aria-label="Navegação principal">
+            <a href="/" class={currentPath === '/' ? 'active' : ''}>Início</a>
+            <a href="/blog" class={currentPath.startsWith('/blog') ? 'active' : ''}>Blog</a>
+          </nav>
+        </div>
+      </div>
+    </header>
+
+    <!-- ── MAIN ── -->
+    <main>
+      <slot />
+    </main>
+
+    <!-- ── FOOTER ── -->
+    <footer class="site-footer">
+      <div class="container">
+        <div class="footer-inner">
+          <span class="footer-brand">𓂀 Web AppSec Engineer</span>
+          <span class="footer-meta">
+            // Knowledge is the strongest cipher
+          </span>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+</body>
+</html>

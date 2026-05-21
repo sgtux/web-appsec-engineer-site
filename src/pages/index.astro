@@ -1,0 +1,94 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+// Importa todos os posts da pasta /pages/posts/
+// usando Astro.glob para obter metadados do frontmatter
+const allPosts = await Astro.glob('./posts/*.md');
+
+// Ordena por data decrescente
+const posts = allPosts.sort(
+  (a, b) =>
+    new Date(b.frontmatter.date).getTime() -
+    new Date(a.frontmatter.date).getTime()
+);
+---
+
+<BaseLayout title="Web AppSec Engineer">
+  <div class="container">
+
+    <!-- ── HERO ── -->
+    <section class="hero">
+      <p class="hero-eyebrow">Security Research &amp; Engineering</p>
+      <h1 class="hero-title">
+        Web AppSec<br /><em>Engineer</em>
+      </h1>
+      <p class="hero-desc">
+        Pesquisa aplicada em segurança de aplicações web. Vulnerabilidades, 
+        laboratórios práticos, CTFs, criptografia aplicada e desenvolvimento 
+        seguro — documentados com rigor técnico.
+      </p>
+      <div class="hero-tags">
+        <span class="tag">Web Security</span>
+        <span class="tag">OWASP</span>
+        <span class="tag">CTF</span>
+        <span class="tag">Cryptography</span>
+        <span class="tag">Secure Dev</span>
+        <span class="tag">Pentesting</span>
+        <span class="tag">Bug Bounty</span>
+      </div>
+    </section>
+
+    <div class="ornament">
+      <span class="ornament-symbol">𓎟 𓂀 𓎟</span>
+    </div>
+
+    <!-- ── INTRO ── -->
+    <section class="mb-4">
+      <div class="intro-box">
+        <p>
+          Este espaço reúne estudos, anotações técnicas e laboratórios sobre 
+          segurança de aplicações web. O conteúdo cobre desde vulnerabilidades 
+          clássicas como XSS e SQL Injection até técnicas avançadas de análise 
+          e exploração. A intenção é documentar o processo de aprendizado de 
+          forma estruturada — como um grimório de engenharia de segurança, 
+          construído camada por camada.
+        </p>
+      </div>
+    </section>
+
+    <!-- ── POSTS RECENTES ── -->
+    <section class="mb-4">
+      <div class="section-heading">
+        <h2>Posts Recentes</h2>
+        <span class="section-heading-line"></span>
+        <a href="/blog" class="text-mono text-dim" style="white-space: nowrap; font-size: 0.68rem; letter-spacing: 0.1em; text-decoration: none; transition: color 0.2s;" 
+           onmouseover="this.style.color='var(--cyan)'" 
+           onmouseout="this.style.color='var(--text-dim)'">
+          ver todos →
+        </a>
+      </div>
+
+      <div class="posts-grid">
+        {posts.map((post) => {
+          const formattedDate = new Date(post.frontmatter.date).toLocaleDateString('pt-BR', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+          });
+          return (
+            <a href={post.url} class="post-card">
+              <div class="post-card-meta">
+                <span class="post-card-date">{formattedDate}</span>
+                <span class="post-card-category">{post.frontmatter.category}</span>
+              </div>
+              <div class="post-card-title">{post.frontmatter.title}</div>
+              <p class="post-card-excerpt">{post.frontmatter.description}</p>
+              <span class="post-card-arrow">→</span>
+            </a>
+          );
+        })}
+      </div>
+    </section>
+
+  </div>
+</BaseLayout>

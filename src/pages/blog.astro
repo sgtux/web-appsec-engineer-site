@@ -1,0 +1,49 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const allPosts = await Astro.glob('./posts/*.md');
+
+const posts = allPosts.sort(
+  (a, b) =>
+    new Date(b.frontmatter.date).getTime() -
+    new Date(a.frontmatter.date).getTime()
+);
+
+// Agrupa por categoria para exibição futura (não usada aqui, mas útil)
+const categories = [...new Set(posts.map((p) => p.frontmatter.category))];
+---
+
+<BaseLayout
+  title="Blog"
+  description="Todos os posts sobre segurança de aplicações web, vulnerabilidades, CTFs e engenharia de segurança."
+>
+  <div class="container">
+
+    <div class="blog-header">
+      <h1>Arquivo de Posts</h1>
+      <p>{posts.length} entradas · {categories.join(' · ')}</p>
+    </div>
+
+    <div class="posts-grid mb-4">
+      {posts.map((post) => {
+        const formattedDate = new Date(post.frontmatter.date).toLocaleDateString('pt-BR', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        });
+        return (
+          <a href={post.url} class="post-card">
+            <div class="post-card-meta">
+              <span class="post-card-date">{formattedDate}</span>
+              <span class="post-card-category">{post.frontmatter.category}</span>
+            </div>
+            <div class="post-card-title">{post.frontmatter.title}</div>
+            <p class="post-card-excerpt">{post.frontmatter.description}</p>
+            <span class="post-card-arrow">→</span>
+          </a>
+        );
+      })}
+    </div>
+
+  </div>
+</BaseLayout>
