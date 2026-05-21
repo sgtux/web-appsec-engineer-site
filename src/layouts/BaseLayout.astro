@@ -21,7 +21,7 @@ const defaultDesc = isPtBr
 
 const description = Astro.props.description ?? defaultDesc;
 
-const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? 'https://web-appsec.engineer');
+const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? 'https://localhost:4321');
 const siteTitle = title === 'Web AppSec Engineer'
   ? 'Web AppSec Engineer'
   : `${title} · Web AppSec Engineer`;

@@ -274,6 +274,7 @@ main { flex: 1; }
   font-weight: 700; color: #fff;
   letter-spacing: 0.02em; line-height: 1.1;
   margin-bottom: 1.25rem;
+  padding-left: 2rem;
 }
 
 .hero-title em {
@@ -290,9 +291,16 @@ main { flex: 1; }
   font-size: 1.05rem; color: var(--text-2);
   max-width: 520px; line-height: 1.75;
   font-weight: 300; margin-bottom: 2.5rem;
+  padding-left: 4rem;
 }
 
-.hero-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 2rem; }
+.hero-tags { 
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 2rem;
+  padding-left: 2rem;
+}
 
 /* ─── INTRO BOX ─── */
 .intro-box {
