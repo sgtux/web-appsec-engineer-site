@@ -1,5 +1,5 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
 
 const allPosts = await Astro.glob('./posts/*.md');
 
@@ -9,13 +9,13 @@ const posts = allPosts.sort(
     new Date(a.frontmatter.date).getTime()
 );
 
-// Agrupa por categoria para exibição futura (não usada aqui, mas útil)
 const categories = [...new Set(posts.map((p) => p.frontmatter.category))];
 ---
 
 <BaseLayout
   title="Blog"
   description="Todos os posts sobre segurança de aplicações web, vulnerabilidades, CTFs e engenharia de segurança."
+  lang="pt-BR"
 >
   <div class="container">
 

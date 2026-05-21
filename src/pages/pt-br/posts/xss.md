@@ -1,9 +1,10 @@
 ---
-layout: ../../layouts/PostLayout.astro
+layout: ../../../layouts/PostLayout.astro
 title: "Cross-Site Scripting (XSS): O Clássico Que Não Envelhece"
 description: "Entenda o que é XSS, como funciona na prática, qual o seu impacto real e como escrever código que não seja vulnerável a esse tipo de ataque."
 date: "2024-06-10"
 category: "Vulnerabilidades"
+lang: "pt-BR"
 ---
 
 ## O Que é XSS?

@@ -7,22 +7,33 @@ export interface Props {
     description: string;
     date: string;
     category: string;
+    lang: 'pt-BR' | 'en-US';
   };
 }
 
 const { frontmatter } = Astro.props;
 
-const formattedDate = new Date(frontmatter.date).toLocaleDateString('pt-BR', {
-  year: 'numeric',
-  month: 'long',
-  day: 'numeric',
-});
+const isPtBr  = frontmatter.lang === 'pt-BR';
+const locale  = isPtBr ? 'pt-br' : 'en-us';
+
+const formattedDate = new Date(frontmatter.date).toLocaleDateString(
+  isPtBr ? 'pt-BR' : 'en-US',
+  { year: 'numeric', month: 'long', day: 'numeric' }
+);
+
+const backLabel = isPtBr ? '← voltar ao blog' : '← back to blog';
+const allLabel  = isPtBr ? '← ver todos os posts' : '← see all posts';
 ---
 
-<BaseLayout title={frontmatter.title} description={frontmatter.description} isPost={true}>
+<BaseLayout
+  title={frontmatter.title}
+  description={frontmatter.description}
+  lang={frontmatter.lang}
+  isPost={true}
+>
   <div class="container">
     <div class="post-header">
-      <a href="/blog" class="back-link">← voltar ao blog</a>
+      <a href={`/${locale}/blog`} class="back-link">{backLabel}</a>
 
       <div class="post-header-meta">
         <span class="post-card-date">{formattedDate}</span>
@@ -42,7 +53,7 @@ const formattedDate = new Date(frontmatter.date).toLocaleDateString('pt-BR', {
     </div>
 
     <div style="text-align: center; padding-bottom: 4rem;">
-      <a href="/blog" class="back-link">← ver todos os posts</a>
+      <a href={`/${locale}/blog`} class="back-link">{allLabel}</a>
     </div>
   </div>
 </BaseLayout>

@@ -1,9 +1,10 @@
 ---
-layout: ../../layouts/PostLayout.astro
+layout: ../../../layouts/PostLayout.astro
 title: "SQL Injection: Quando o Banco de Dados Obedece ao Atacante"
 description: "Um guia direto sobre SQL Injection — como a vulnerabilidade funciona, exemplos práticos de exploração e as defesas que realmente funcionam."
 date: "2024-06-03"
 category: "Vulnerabilidades"
+lang: "pt-BR"
 ---
 
 ## O Que é SQL Injection?
