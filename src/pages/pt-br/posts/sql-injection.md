@@ -7,152 +7,127 @@ category: "Vulnerabilidades"
 lang: "pt-BR"
 ---
 
-## O Que é SQL Injection?
+### SQL Injection
+SQL Injection é uma vulnerabilidade que ocorre quando um aplicativo permite que dados de entrada do usuário sejam incorporados em consultas SQL sem validação ou sanitização adequada. Isso permite que um atacante manipule a consulta SQL para acessar ou modificar informações não autorizadas no banco de dados.
 
-**SQL Injection (SQLi)** é uma vulnerabilidade que permite a um atacante interferir nas consultas SQL que uma aplicação faz ao seu banco de dados. Quando entradas do usuário são interpoladas diretamente em queries sem tratamento adequado, o banco de dados não consegue distinguir dados de comandos — e o atacante passa a controlar a lógica da consulta.
+### Como Funciona?
 
-É uma das vulnerabilidades mais antigas e ainda amplamente explorada. O OWASP a mantém consistentemente entre as principais ameaças à segurança de aplicações web.
+1. Entrada do Usuário Não Segura: O aplicativo constrói consultas SQL concatenando strings diretamente a partir de entradas do usuário.
+2. Manipulação de Consultas: O atacante insere comandos SQL maliciosos na entrada do usuário.
+3. Impacto:
+    - Vazamento de dados sensíveis.
+    - Modificação ou exclusão de dados.
+    - Controle total do banco de dados em alguns casos.
 
----
+## Exemplo de Falha:
+### Código Vulnerável (JavaScript com Node.js):
 
-## Como Funciona
+```js
+const express = require('express');
+const mysql = require('mysql');
+const app = express();
 
-Considere um sistema de login com a seguinte query:
+const connection = mysql.createConnection({
+    host: 'localhost',
+    user: 'root',
+    password: 'password',
+    database: 'testdb'
+});
+
+app.get('/login', (req, res) => {
+    const username = req.query.username;
+    const password = req.query.password;
+
+    // Consulta SQL vulnerável
+    const query = `SELECT * FROM users WHERE username = '${username}' AND password = '${password}'`;
+    connection.query(query, (err, results) => {
+        if (err) throw err;
+        if (results.length > 0) {
+            res.send("Login bem-sucedido!");
+        } else {
+            res.send("Credenciais inválidas!");
+        }
+    });
+});
+
+app.listen(3000);
+```
+
+Exploração:
+
+- Entrada do usuário no navegador:
+```bash
+/login?username=admin'--&password=anything
+```
+
+- Resultado da consulta SQL:
+```bash
+SELECT * FROM users WHERE username = 'admin'--' AND password = 'anything';
+```
+A parte após -- é ignorada, permitindo login sem senha.
+
+## Correção:
+
+1. Usar Consultas Preparadas (Prepared Statements):
+
+Consultas preparadas tratam automaticamente os dados de entrada como valores, evitando que eles sejam interpretados como comandos SQL.
+Exemplo em Node.js:
+
+```js
+app.get('/login', (req, res) => {
+    const username = req.query.username;
+    const password = req.query.password;
+
+    // Consulta segura com parâmetros
+    const query = `SELECT * FROM users WHERE username = ? AND password = ?`;
+    connection.query(query, [username, password], (err, results) => {
+        if (err) throw err;
+        if (results.length > 0) {
+            res.send("Login bem-sucedido!");
+        } else {
+            res.send("Credenciais inválidas!");
+        }
+    });
+});
+```
+
+### 2. Validar e Sanitizar Entrada do Usuário:
+
+Imponha restrições para garantir que os dados estejam no formato esperado.
+Exemplo:
+
+```js
+const username = req.query.username;
+if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+    res.status(400).send("Nome de usuário inválido!");
+    return;
+}
+```
+
+### 3. Restringir Privilégios do Banco de Dados:
+
+- Use contas de banco de dados com o menor privilégio possível.
+- Impedir que o aplicativo execute comandos como DROP, ALTER, ou DELETE.
+
+## Outro Exemplo: Exfiltração de Dados
+Entrada Maliciosa:
+```sql
+' OR '1'='1'; --
+```
+Consulta Resultante:
 
 ```sql
-SELECT * FROM usuarios WHERE usuario = 'INPUT' AND senha = 'INPUT';
+SELECT * FROM users WHERE username = '' OR '1'='1'; -- AND password = '...';
 ```
 
-Com entradas legítimas, a lógica funciona como esperado. Mas se o campo de usuário aceitar o valor:
+- O ataque retorna todos os usuários, já que OR '1'='1' sempre é verdadeiro.
 
-```
-' OR '1'='1
-```
+## Boas Práticas para Prevenção:
 
-A query resultante se torna:
+1. Usar **Prepared Statements** ou ORMs (como Hibernate, Sequelize, etc.).
+2. **Escapar Entradas**: Sanitizar dados com bibliotecas apropriadas.
+3. **Validação de Entrada**: Aceitar apenas formatos esperados.
+4. **Monitorar o Banco de Dados**: Use ferramentas de auditoria para detectar consultas suspeitas.
+5. **Implemente a Defesa em Profundidade**: Combine várias camadas de proteção.
 
-```sql
-SELECT * FROM usuarios WHERE usuario = '' OR '1'='1' AND senha = '...';
-```
-
-A condição `'1'='1'` é sempre verdadeira — o atacante autentica sem credenciais válidas.
-
----
-
-## Tipos de SQL Injection
-
-### In-band SQLi
-
-O resultado da injeção é exibido diretamente na resposta HTTP. É o tipo mais fácil de explorar.
-
-- **Error-based**: mensagens de erro do banco revelam estrutura e dados
-- **UNION-based**: o atacante adiciona um `UNION SELECT` para extrair dados de outras tabelas
-
-```sql
--- UNION-based: extraindo usuários do sistema
-' UNION SELECT username, password, NULL FROM admin_users--
-```
-
-### Blind SQLi
-
-A aplicação não exibe o resultado da query, mas o atacante infere informações pelo comportamento:
-
-- **Boolean-based**: a resposta varia conforme a condição é verdadeira ou falsa
-- **Time-based**: usa funções como `SLEEP()` para deduzir dados pelo tempo de resposta
-
-```sql
--- Time-based: se a primeira letra do nome do banco for 'a', aguarda 5 segundos
-' AND IF(SUBSTRING(database(),1,1)='a', SLEEP(5), 0)--
-```
-
-### Out-of-band SQLi
-
-Exfiltra dados via canais externos (DNS, HTTP) — útil quando in-band e blind não são viáveis.
-
----
-
-## Impacto Real
-
-Dependendo das permissões do usuário do banco de dados e da configuração do servidor, SQL Injection pode permitir:
-
-- **Bypass de autenticação**: acesso administrativo sem credenciais
-- **Exfiltração completa**: dump de todas as tabelas — usuários, senhas, dados sensíveis
-- **Modificação de dados**: UPDATE ou DELETE em registros arbitrários
-- **Escalada de privilégios**: se o usuário do banco tiver permissões elevadas
-- **Execução de comandos no SO**: via `xp_cmdshell` (SQL Server) ou `INTO OUTFILE` (MySQL)
-- **Pivoting interno**: acesso à rede interna a partir do banco de dados
-
-> Em 2009, o ataque Heartland Payment Systems — via SQL Injection — resultou no vazamento de mais de 130 milhões de dados de cartões de crédito. Danos estimados em centenas de milhões de dólares.
-
----
-
-## Como Prevenir
-
-### 1. Prepared Statements (Consultas Parametrizadas)
-
-Esta é a defesa primária e mais eficaz. O banco recebe o comando SQL e os dados separadamente — dados nunca são interpretados como código.
-
-**PHP + PDO:**
-```php
-$stmt = $pdo->prepare('SELECT * FROM usuarios WHERE usuario = ? AND senha = ?');
-$stmt->execute([$usuario, $senha]);
-```
-
-**Python + sqlite3:**
-```python
-cursor.execute(
-    "SELECT * FROM usuarios WHERE usuario = ? AND senha = ?",
-    (usuario, senha)
-)
-```
-
-**Java + PreparedStatement:**
-```java
-PreparedStatement stmt = conn.prepareStatement(
-    "SELECT * FROM usuarios WHERE usuario = ? AND senha = ?"
-);
-stmt.setString(1, usuario);
-stmt.setString(2, senha);
-```
-
-### 2. Stored Procedures Parametrizadas
-
-Equivalente a prepared statements no nível do banco de dados, desde que implementadas corretamente (sem concatenação dinâmica interna).
-
-### 3. Princípio do Menor Privilégio
-
-O usuário do banco de dados que a aplicação usa deve ter **apenas as permissões necessárias**:
-
-- Leitura em tabelas que exige leitura
-- Escrita apenas onde necessário
-- Nunca `DROP`, `CREATE` ou `EXECUTE` em produção
-
-### 4. Validação e Allowlisting de Entrada
-
-Para valores que não podem ser parametrizados (nomes de tabelas, colunas, ordenação), use allowlisting estrita:
-
-```python
-ALLOWED_COLUMNS = {'nome', 'data', 'valor'}
-if coluna not in ALLOWED_COLUMNS:
-    raise ValueError("Coluna inválida")
-```
-
-### 5. WAF como Camada Adicional
-
-Web Application Firewalls detectam padrões conhecidos de SQLi, mas **não substituem** código seguro — são uma camada de defesa extra, não a principal.
-
----
-
-## Ferramentas para Teste
-
-- **sqlmap**: automação de detecção e exploração de SQLi (apenas em ambientes autorizados)
-- **Burp Suite**: interceptação e modificação de requisições para teste manual
-- **DVWA / WebGoat**: ambientes vulneráveis intencionalmente para prática
-
----
-
-## Leitura Complementar
-
-- [OWASP SQL Injection Prevention Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html)
-- [PortSwigger Web Security Academy — SQL Injection](https://portswigger.net/web-security/sql-injection)
-- CWE-89: Improper Neutralization of Special Elements used in an SQL Command
+Esses exemplos mostram o impacto potencial e como corrigir vulnerabilidades de SQL Injection.

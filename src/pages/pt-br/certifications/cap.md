@@ -1,15 +1,15 @@
 ---
-layout: ../../../layouts/PostLayout.astro
-title: "What you need to know about CAP Certification ?"
-description: "Certified AppSec Practitioner (CAP) is an entry-level exam to test candidates’ knowledge on the core concepts of application security."
+layout: ../../../layouts/CertificationLayout.astro
+title: "Certified AppSec Practitioner (CAP)"
+description: "O que você precisa saber sobre a certificação CAP ?"
 date: "2024-10-08"
 category: "Certifications"
 lang: "pt-BR"
 ---
 
-Certified AppSec Practitioner (CAP) is an entry-level exam to test candidates’ knowledge on the core concepts of application security.
+O Certified AppSec Practitioner (CAP) é um exame de nível básico para testar o conhecimento dos candidatos sobre os principais conceitos de segurança de aplicativos.
 
-### Topics covered:
+### Tópicos abordados:
 
 - Input Validation Mechanisms
   - Blacklisting
@@ -22,6 +22,7 @@ Certified AppSec Practitioner (CAP) is an entry-level exam to test candidates’
 - Authentication related Vulnerabilities
   - Brute force Attacks
   - Password Storage and Password Policy
+
 - Understanding of OWASP Top 10 Vulnerabilities
 - Security Best Practices and Hardening Mechanisms.
   - Same Origin Policy
@@ -44,4 +45,4 @@ Certified AppSec Practitioner (CAP) is an entry-level exam to test candidates’
 - Vulnerable and Outdated Components.
 - Common Supply Chain Attacks and Prevention Methods.
 
-Link to [Certification](https://pentestingexams.com/product/certified-application-security-practitioner/)
+[Link para a Certificação](https://pentestingexams.com/product/certified-application-security-practitioner/)

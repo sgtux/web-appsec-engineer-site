@@ -1,0 +1,59 @@
+---
+import BaseLayout from './BaseLayout.astro';
+
+export interface Props {
+  frontmatter: {
+    title: string;
+    description: string;
+    date: string;
+    category: string;
+    lang: 'pt-BR' | 'en-US';
+  };
+}
+
+const { frontmatter } = Astro.props;
+
+const isPtBr  = frontmatter.lang === 'pt-BR';
+const locale  = isPtBr ? 'pt-br' : 'en-us';
+
+const formattedDate = new Date(frontmatter.date).toLocaleDateString(
+  isPtBr ? 'pt-BR' : 'en-US',
+  { year: 'numeric', month: 'long', day: 'numeric' }
+);
+
+const backLabel = isPtBr ? '← voltar ás certificações' : '← back to certifications';
+const allLabel  = isPtBr ? '← ver todas as certificações' : '← see all certifications';
+---
+
+<BaseLayout
+  title={frontmatter.title}
+  description={frontmatter.description}
+  lang={frontmatter.lang}
+  isPost={true}
+>
+  <div class="container">
+    <div class="post-header">
+      <a href={`/${locale}/certifications`} class="back-link">{backLabel}</a>
+
+      <div class="post-header-meta">
+        <span class="post-card-date">{formattedDate}</span>
+        <span class="post-card-category">{frontmatter.category}</span>
+      </div>
+
+      <h1>{frontmatter.title}</h1>
+      <p class="post-header-desc">{frontmatter.description}</p>
+    </div>
+
+    <article class="post-content">
+      <slot />
+    </article>
+
+    <div class="ornament" style="margin-top: 4rem;">
+      <span class="ornament-symbol"></span>
+    </div>
+
+    <div style="text-align: center; padding-bottom: 4rem;">
+      <a href={`/${locale}/certifications`} class="back-link">{allLabel}</a>
+    </div>
+  </div>
+</BaseLayout>

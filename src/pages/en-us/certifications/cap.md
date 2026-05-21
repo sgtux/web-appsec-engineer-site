@@ -1,5 +1,5 @@
 ---
-layout: ../../../layouts/PostLayout.astro
+layout: ../../../layouts/CertificationLayout.astro
 title: "What you need to know about CAP Certification ?"
 description: "Certified AppSec Practitioner (CAP) is an entry-level exam to test candidates’ knowledge on the core concepts of application security."
 date: "2024-10-08"
