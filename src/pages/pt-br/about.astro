@@ -1,0 +1,158 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Sobre"
+  description="Sobre o Web AppSec Engineer — proposta do blog, áreas de pesquisa e formas de contato."
+  lang="pt-BR"
+>
+  <div class="container">
+
+    <!-- ── CABEÇALHO ── -->
+    <div class="blog-header">
+      <h1>Sobre</h1>
+      <p class="text-mono text-dim">// quem escreve · o que pesquisa · onde encontrar</p>
+    </div>
+
+    <!-- ── IDENTIDADE ── -->
+    <section class="about-hero mb-4">
+      <div class="about-glyph" aria-hidden="true">𓂀</div>
+      <div class="about-intro">
+        <h2 class="about-name">Web AppSec Engineer</h2>
+        <p class="about-tagline">Engenheiro de segurança de aplicações web.<br />Pesquisador e explorador de falhas de forma controlada e didática.</p>
+        <div class="about-badges">
+          <span class="badge">Offensive Security</span>
+          <span class="badge">Defensive Engineering</span>
+          <span class="badge">CTF Player</span>
+          <span class="badge">Bug Hunter</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="ornament"><span class="ornament-symbol">𓎟 𓂀 𓎟</span></div>
+
+    <!-- ── PROPOSTA ── -->
+    <section class="about-section mb-4">
+      <div class="section-heading">
+        <h2>A Proposta do Blog</h2>
+        <span class="section-heading-line"></span>
+      </div>
+      <div class="about-text">
+        <p>
+          Este blog nasceu de uma necessidade simples: <strong>documentar o que vale a pena lembrar</strong>. 
+          Segurança de aplicações web é uma disciplina vasta e em constante movimento. 
+          Vulnerabilidades evoluem, frameworks mudam, superfícies de ataque se expandem — 
+          e o conhecimento acumulado sem registro se perde.
+        </p>
+        <p>
+          Aqui você vai encontrar anotações técnicas reais, laboratórios reproduzíveis, 
+          análises de CVEs, write-ups de CTFs e reflexões sobre desenvolvimento seguro. 
+          Nada de conteúdo genérico gerado para volume. Cada post existe porque foi 
+          útil o suficiente para merecer estar escrito.
+        </p>
+        <p>
+          A estética egípcia não é decoração aleatória — é uma metáfora deliberada. 
+          Os escribas egípcios foram os primeiros engenheiros do conhecimento estruturado. 
+          Cada hieróglifo era um protocolo. Cada papiro, documentação de um sistema. 
+          A ideia é a mesma: <em>construir com precisão, registrar com rigor</em>.
+        </p>
+      </div>
+    </section>
+
+    <!-- ── ÁREAS ── -->
+    <section class="about-section mb-4">
+      <div class="section-heading">
+        <h2>Áreas de Pesquisa</h2>
+        <span class="section-heading-line"></span>
+      </div>
+      <div class="about-grid">
+
+        <div class="about-card">
+          <div class="about-card-icon">𓃭</div>
+          <h3>Vulnerabilidades Web</h3>
+          <p>XSS, SQLi, SSRF, XXE, IDOR, deserialization, race conditions e tudo que o OWASP Top 10 não consegue capturar completamente.</p>
+        </div>
+
+        <div class="about-card">
+          <div class="about-card-icon">𓆑</div>
+          <h3>Engenharia Reversa & CTF</h3>
+          <p>Write-ups de desafios de web security, análise de binários e resolução de puzzles criptográficos em competições.</p>
+        </div>
+
+        <div class="about-card">
+          <div class="about-card-icon">𓇯</div>
+          <h3>Desenvolvimento Seguro</h3>
+          <p>SAST, DAST, threat modeling, code review com foco em segurança e integração de práticas seguras no ciclo de desenvolvimento.</p>
+        </div>
+
+        <div class="about-card">
+          <div class="about-card-icon">𓊹</div>
+          <h3>Criptografia Aplicada</h3>
+          <p>Implementações, ataques clássicos, protocolos modernos e como criptografia mal implementada cria vulnerabilidades reais.</p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ── FILOSOFIA ── -->
+    <section class="about-section mb-4">
+      <div class="section-heading">
+        <h2>Filosofia</h2>
+        <span class="section-heading-line"></span>
+      </div>
+      <div class="about-quote-block">
+        <blockquote class="about-quote">
+          "Security is not a product, but a process."
+          <cite>— Bruce Schneier</cite>
+        </blockquote>
+        <div class="about-text">
+          <p>
+            Segurança não é uma caixa para marcar ou um relatório para entregar. 
+            É uma disciplina de engenharia contínua — que exige compreensão profunda 
+            do atacante, do sistema e do contexto em que opera.
+          </p>
+          <p>
+            O melhor defensor entende como atacar. O melhor pesquisador sabe como construir. 
+            Este blog existe nessa interseção: <strong>ofensivo o suficiente para entender 
+            a ameaça, defensivo o suficiente para neutralizá-la</strong>.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── CONTATO ── -->
+    <section class="about-section mb-4">
+      <div class="section-heading">
+        <h2>Contato</h2>
+        <span class="section-heading-line"></span>
+      </div>
+      <div class="about-contact">
+        <p class="about-text-single">
+          Sugestões de post, correções técnicas, discussões sobre vulnerabilidades 
+          ou colaborações em pesquisa são bem-vindas.
+        </p>
+        <div class="contact-links">
+          <a href="https://github.com" class="contact-link" target="_blank" rel="noopener">
+            <span class="contact-link-icon">⌥</span>
+            <span class="contact-link-label">GitHub</span>
+            <span class="contact-link-handle">@web-appsec-engineer</span>
+          </a>
+          <a href="https://twitter.com" class="contact-link" target="_blank" rel="noopener">
+            <span class="contact-link-icon">⌘</span>
+            <span class="contact-link-label">Twitter / X</span>
+            <span class="contact-link-handle">@appsec_eng</span>
+          </a>
+          <a href="mailto:contact@web-appsec.engineer" class="contact-link">
+            <span class="contact-link-icon">✉</span>
+            <span class="contact-link-label">E-mail</span>
+            <span class="contact-link-handle">contact@web-appsec.engineer</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <div class="ornament"><span class="ornament-symbol">𓃠 𓂀 𓃠</span></div>
+
+  </div>
+</BaseLayout>

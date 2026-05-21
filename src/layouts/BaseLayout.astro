@@ -29,8 +29,9 @@ const siteTitle = title === 'Web AppSec Engineer'
 const currentPath = Astro.url.pathname;
 
 const nav = {
-  home:   isPtBr ? 'Início'  : 'Home',
-  blog:   'Blog',
+  home:  isPtBr ? 'Início' : 'Home',
+  blog:  'Blog',
+  about: isPtBr ? 'Sobre'  : 'About',
 };
 
 const footer = {
@@ -84,8 +85,9 @@ const footer = {
 
           <div class="header-right">
             <nav class="site-nav" aria-label="Main navigation">
-              <a href={`/${locale}/`}    class={currentPath === `/${locale}/` ? 'active' : ''}>{nav.home}</a>
+              <a href={`/${locale}/`}     class={currentPath === `/${locale}/` ? 'active' : ''}>{nav.home}</a>
               <a href={`/${locale}/blog`} class={currentPath.startsWith(`/${locale}/blog`) ? 'active' : ''}>{nav.blog}</a>
+              <a href={`/${locale}/about`} class={currentPath.startsWith(`/${locale}/about`) ? 'active' : ''}>{nav.about}</a>
             </nav>
 
             <!-- Language switcher -->
