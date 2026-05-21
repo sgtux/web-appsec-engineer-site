@@ -129,10 +129,19 @@ main {
 
 .site-logo {
   display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.65rem;
+  text-decoration: none;
+}
+
+.logo-text {
+  display: flex;
   flex-direction: column;
   gap: 0.1rem;
   text-decoration: none;
 }
+
 
 .logo-main {
   font-family: var(--font-display);
@@ -332,7 +341,7 @@ main {
 }
 
 .hero-desc {
-  font-size: 1.05rem;
+  font-size: 1.25rem;
   color: var(--text-muted);
   max-width: 580px;
   line-height: 1.8;
@@ -428,7 +437,7 @@ main {
 
 .post-card-date {
   font-family: var(--font-mono);
-  font-size: 0.65rem;
+  font-size: 0.85rem;
   color: var(--text-dim);
   letter-spacing: 0.1em;
 }
@@ -459,7 +468,7 @@ main {
 }
 
 .post-card-excerpt {
-  font-size: 0.88rem;
+  font-size: 0.95rem;
   color: var(--text-muted);
   line-height: 1.65;
 }
@@ -491,7 +500,6 @@ main {
 }
 
 .intro-box::after {
-  content: '𓂀';
   position: absolute;
   right: 2rem;
   top: 50%;
@@ -503,7 +511,7 @@ main {
 }
 
 .intro-box p {
-  font-size: 0.95rem;
+  font-size: 1.05rem;
   color: var(--text-muted);
   line-height: 1.85;
   max-width: 640px;
@@ -795,14 +803,12 @@ main {
   pointer-events: none;
 }
 
-.about-glyph {
-  font-size: 5rem;
-  line-height: 1;
-  color: var(--gold-dim);
-  opacity: 0.6;
-  flex-shrink: 0;
-  user-select: none;
-  filter: drop-shadow(0 0 18px rgba(201,168,76,0.25));
+.about-avatar {
+  width:16rem;
+  height:16rem;
+  border-radius: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .about-intro {
@@ -836,7 +842,7 @@ main {
 
 .badge {
   font-family: var(--font-mono);
-  font-size: 0.62rem;
+  font-size: 0.72rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   padding: 0.25rem 0.65rem;
@@ -936,7 +942,7 @@ main {
 }
 
 .about-card p {
-  font-size: 0.875rem;
+  font-size: 0.95rem;
   color: var(--text-muted);
   line-height: 1.7;
 }
@@ -978,7 +984,7 @@ main {
   display: block;
   margin-top: 0.75rem;
   font-family: var(--font-mono);
-  font-size: 0.68rem;
+  font-size: 0.78rem;
   font-style: normal;
   letter-spacing: 0.14em;
   color: var(--text-dim);
@@ -1041,7 +1047,7 @@ main {
 
 .contact-link-label {
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.82rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--text-muted);
@@ -1069,10 +1075,6 @@ main {
     align-items: flex-start;
     gap: 1.25rem;
     padding: 1.5rem;
-  }
-
-  .about-glyph {
-    font-size: 3rem;
   }
 
   .about-grid {
