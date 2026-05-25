@@ -1,7 +1,11 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
-const allPosts = await Astro.glob('./posts/*.md');
+interface MarkdownPost {
+  frontmatter: { title: string; date: string; description: string; category: string };
+  url: string;
+}
+const allPosts = Object.values(import.meta.glob<MarkdownPost>('./posts/*.md', { eager: true }));
 
 const posts = allPosts.sort(
   (a, b) =>

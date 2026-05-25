@@ -1,7 +1,11 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
-const allCertifications = await Astro.glob('./certifications/*.md');
+interface MarkdownPost {
+  frontmatter: { title: string; date: string; description: string; category: string };
+  url: string;
+}
+const allCertifications = Object.values(import.meta.glob<MarkdownPost>('./certifications/*.md', { eager: true }));
 
 const certificatios = allCertifications.sort(
   (a, b) =>

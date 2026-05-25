@@ -6,32 +6,32 @@ export interface Props {
   isPost?: boolean;
 }
 
-const {
-  title,
-  lang = 'pt-BR',
-  isPost = false,
-} = Astro.props;
+const { title, lang = 'pt-BR', isPost = false } = Astro.props;
 
-const isPtBr = lang === 'pt-BR';
-const locale  = isPtBr ? 'pt-br' : 'en-us';
+const isPtBr = lang === "pt-BR";
+const locale = isPtBr ? "pt-br" : "en-us";
 
 const defaultDesc = isPtBr
-  ? 'Pesquisa aplicada em segurança de aplicações web — vulnerabilidades, laboratórios, CTFs, criptografia e desenvolvimento seguro.'
-  : 'Applied research in web application security — vulnerabilities, labs, CTFs, cryptography, and secure development.';
+  ? "Pesquisa aplicada em segurança de aplicações web — vulnerabilidades, laboratórios, CTFs, criptografia e desenvolvimento seguro."
+  : "Applied research in web application security — vulnerabilities, labs, CTFs, cryptography, and secure development.";
 
 const description = Astro.props.description ?? defaultDesc;
 
-const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? 'https://localhost:4321');
-const siteTitle = title === 'Web AppSec Engineer'
-  ? 'Web AppSec Engineer'
-  : `${title} · Web AppSec Engineer`;
+const canonicalURL = new URL(
+  Astro.url.pathname,
+  Astro.site ?? 'https://localhost:4321',
+);
+const siteTitle =
+  title === 'Web AppSec Engineer'
+    ? 'Web AppSec Engineer'
+    : `${title} · Web AppSec Engineer`;
 
 const currentPath = Astro.url.pathname;
 
 const nav = {
-  home:  isPtBr ? 'Início' : 'Home',
-  blog:  'Blog',
-  about: isPtBr ? 'Sobre'  : 'About',
+  home: isPtBr ? 'Início' : 'Home',
+  blog: 'Blog',
+  about: isPtBr ? 'Sobre' : 'About',
 };
 
 const footer = {
@@ -39,94 +39,137 @@ const footer = {
 };
 ---
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang={lang.toLowerCase()}>
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="generator" content={Astro.generator} />
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="generator" content={Astro.generator} />
 
-  <title>{siteTitle}</title>
-  <meta name="description" content={description} />
-  <link rel="canonical" href={canonicalURL} />
+    <title>{siteTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalURL} />
 
-  <!-- hreflang alternates -->
-  <link rel="alternate" hreflang="pt-BR" href={canonicalURL.href.replace(`/${locale}/`, '/pt-br/')} />
-  <link rel="alternate" hreflang="en-US" href={canonicalURL.href.replace(`/${locale}/`, '/en-us/')} />
+    <!-- hreflang alternates -->
+    <link
+      rel="alternate"
+      hreflang="pt-BR"
+      href={canonicalURL.href.replace(`/${locale}/`, '/pt-br/')}
+    />
+    <link
+      rel="alternate"
+      hreflang="en-US"
+      href={canonicalURL.href.replace(`/${locale}/`, '/en-us/')}
+    />
 
-  <!-- Open Graph -->
-  <meta property="og:type"        content={isPost ? 'article' : 'website'} />
-  <meta property="og:title"       content={siteTitle} />
-  <meta property="og:description" content={description} />
-  <meta property="og:url"         content={canonicalURL} />
-  <meta property="og:locale"      content={lang.replace('-', '_')} />
+    <!-- Open Graph -->
+    <meta property="og:type" content={isPost ? 'article' : 'website'} />
+    <meta property="og:title" content={siteTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:locale" content={lang.replace("-", "_")} />
 
-  <!-- Twitter Card -->
-  <meta name="twitter:card"        content="summary" />
-  <meta name="twitter:title"       content={siteTitle} />
-  <meta name="twitter:description" content={description} />
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={siteTitle} />
+    <meta name="twitter:description" content={description} />
 
-  <!-- Favicon -->
-  <link rel="icon" href="/images/image.png" type="image/png" />
+    <!-- Favicon -->
+    <link rel="icon" href="/images/image.png" type="image/png" />
 
-  <link rel="stylesheet" href="/styles/global.css" />
-</head>
-<body>
-  <div class="site-wrapper">
+    <link rel="stylesheet" href="/styles/global.css" />
+  </head>
+  <body>
+    <div class="site-wrapper">
+      <!-- ── HEADER ── -->
+      <header class="site-header">
+        <div class="container">
+          <div class="header-inner">
+            <a href={`/${locale}/`} class="site-logo">
+              <img
+                src="/images/image.png"
+                class="header-avatar"
+                alt=""
+                aria-hidden="true"
+              />
+              <div class="logo-text">
+                <span class="logo-main">Web AppSec Engineer</span>
+                <span class="logo-sub">Security Research &amp; Engineering</span
+                >
+              </div>
+            </a>
 
-    <!-- ── HEADER ── -->
-    <header class="site-header">
-      <div class="container">
-        <div class="header-inner">
-          <a href={`/${locale}/`} class="site-logo">
-            <img src="/images/image.png" class="header-avatar" alt="" aria-hidden="true" />
-            <div class="logo-text">
-              <span class="logo-main">Web AppSec Engineer</span>
-              <span class="logo-sub">Security Research &amp; Engineering</span>
-            </div>
-          </a>
+            <div class="header-right">
+              <nav class="site-nav" aria-label="Main navigation">
+                <a
+                  href={`/${locale}/`}
+                  class={currentPath === `/${locale}/` ? 'active' : ''}
+                  >{nav.home}</a
+                >
+                <a
+                  href={`/${locale}/blog`}
+                  class={currentPath.startsWith(`/${locale}/blog`)
+                    ? 'active'
+                    : ''}>{nav.blog}</a
+                >
+                <a
+                  href={`/${locale}/about`}
+                  class={currentPath.startsWith(`/${locale}/about`)
+                    ? 'active'
+                    : ''}>{nav.about}</a
+                >
+              </nav>
 
-          <div class="header-right">
-            <nav class="site-nav" aria-label="Main navigation">
-              <a href={`/${locale}/`}     class={currentPath === `/${locale}/` ? 'active' : ''}>{nav.home}</a>
-              <a href={`/${locale}/blog`} class={currentPath.startsWith(`/${locale}/blog`) ? 'active' : ''}>{nav.blog}</a>
-              <a href={`/${locale}/about`} class={currentPath.startsWith(`/${locale}/about`) ? 'active' : ''}>{nav.about}</a>
-            </nav>
-
-            <!-- Language switcher -->
-            <div class="lang-switch">
-              <a
-                href={currentPath.replace(`/${locale}/`, '/pt-br/')}
-                class={isPtBr ? 'lang-active' : ''}
-                aria-label="Português"
-              >PT</a>
-              <span class="lang-sep">|</span>
-              <a
-                href={currentPath.replace(`/${locale}/`, '/en-us/')}
-                class={!isPtBr ? 'lang-active' : ''}
-                aria-label="English"
-              >EN</a>
+              <!-- Language switcher -->
+              <div class="lang-switch">
+                <a
+                  href={currentPath.replace(`/${locale}/`, '/pt-br/')}
+                  class={isPtBr ? 'lang-active' : ''}
+                  aria-label="Português">PT</a
+                >
+                <span class="lang-sep">|</span>
+                <a
+                  href={currentPath.replace(`/${locale}/`, '/en-us/')}
+                  class={!isPtBr ? 'lang-active' : ''}
+                  aria-label="English">EN</a
+                >
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </header>
+      </header>
 
-    <!-- ── MAIN ── -->
-    <main>
-      <slot />
-    </main>
+      <!-- ── MAIN ── -->
+      <main>
+        <slot />
+      </main>
 
-    <!-- ── FOOTER ── -->
-    <footer class="site-footer">
-      <div class="container">
-        <div class="footer-inner">
-          <span class="footer-brand">🕵️ Web AppSec Engineer</span>
-          <span class="footer-meta">{footer.tagline}</span>
+      <!-- ── FOOTER ── -->
+      <footer class="site-footer">
+        <div class="container">
+          <div class="footer-inner">
+            <span class="footer-brand">🕵️ Web AppSec Engineer</span>
+            <span class="footer-meta">{footer.tagline}</span>
+          </div>
         </div>
-      </div>
-    </footer>
+      </footer>
+    </div>
+    <script type="module">
+      import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js';
+      import { getAnalytics } from 'https://www.gstatic.com/firebasejs/12.13.0/firebase-analytics.js';
 
-  </div>
-</body>
+      const firebaseConfig = {
+        apiKey: 'AIzaSyBEIUjbxp9bVFBFs0zvZq808DRh6d0V4Fg',
+        authDomain: 'web-appsec-engineer.firebaseapp.com',
+        projectId: 'web-appsec-engineer',
+        storageBucket: 'web-appsec-engineer.firebasestorage.app',
+        messagingSenderId: '769584910177',
+        appId: '1:769584910177:web:c344daf2a8163d5ad47f20',
+        measurementId: 'G-542XS3K1NK',
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const analytics = getAnalytics(app);
+    </script>
+  </body>
 </html>
