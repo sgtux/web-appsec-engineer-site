@@ -34,7 +34,7 @@ const nav = {
   about: isPtBr ? 'Sobre' : 'About',
 };
 
-const footer = {
+const footer = { 
   tagline: '// Knowledge is the strongest cipher',
 };
 ---
@@ -158,18 +158,20 @@ const footer = {
       import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js';
       import { getAnalytics } from 'https://www.gstatic.com/firebasejs/12.13.0/firebase-analytics.js';
 
-      const firebaseConfig = {
-        apiKey: 'AIzaSyBEIUjbxp9bVFBFs0zvZq808DRh6d0V4Fg',
-        authDomain: 'web-appsec-engineer.firebaseapp.com',
-        projectId: 'web-appsec-engineer',
-        storageBucket: 'web-appsec-engineer.firebasestorage.app',
-        messagingSenderId: '769584910177',
-        appId: '1:769584910177:web:c344daf2a8163d5ad47f20',
-        measurementId: 'G-542XS3K1NK',
-      };
+      if(!location.href.includes('localhost')){
+        const firebaseConfig = {
+          apiKey: 'AIzaSyBEIUjbxp9bVFBFs0zvZq808DRh6d0V4Fg',
+          authDomain: 'web-appsec-engineer.firebaseapp.com',
+          projectId: 'web-appsec-engineer',
+          storageBucket: 'web-appsec-engineer.firebasestorage.app',
+          messagingSenderId: '769584910177',
+          appId: '1:769584910177:web:c344daf2a8163d5ad47f20',
+          measurementId: 'G-542XS3K1NK',
+        };
 
-      const app = initializeApp(firebaseConfig);
-      const analytics = getAnalytics(app);
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+      }
     </script>
   </body>
 </html>
