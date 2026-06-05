@@ -2,6 +2,7 @@
   "name": "web-appsec-engineer",
   "type": "module",
   "version": "1.0.0",
+  "packageManager": "pnpm@11.5.1",
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
